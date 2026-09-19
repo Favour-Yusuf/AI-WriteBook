@@ -1089,8 +1089,7 @@ a{color:inherit}
         </div>
 
         <p class="price-row">
-          <span class="price-row__off" data-order-price>$79</span>
-          <span class="price-row__was">was <s data-order-was>$144</s></span>
+          <span class="price-row__off" data-order-price>₦30,000</span>
         </p>
 
         <div class="field">
@@ -1099,10 +1098,10 @@ a{color:inherit}
             <a class="field__link" href="#pricing">View plan details</a>
           </div>
           <select id="tier-select" data-tier-select>
-            <option value="tier1" data-price="$79" data-was="$144" selected>License Tier 1 &mdash; $79</option>
-            <option value="tier2" data-price="$159" data-was="$360">License Tier 2 &mdash; $159</option>
-            <option value="tier3" data-price="$299" data-was="$1,440">License Tier 3 &mdash; $299</option>
-            <option value="tier4" data-price="$499" data-was="$2,000">License Tier 4 &mdash; $499</option>
+            <option value="tier1" data-price="₦30,000" selected>License Tier 1 &mdash; ₦30,000</option>
+            <option value="tier2" data-price="₦50,000">License Tier 2 &mdash; ₦50,000</option>
+            <option value="tier3" data-price="₦100,000">License Tier 3 &mdash; ₦100,000</option>
+            <option value="tier4" data-price="₦200,000">License Tier 4 &mdash; ₦200,000</option>
           </select>
         </div>
 
@@ -1319,32 +1318,28 @@ a{color:inherit}
 
             <th scope="col" class="plan-head">
               <span class="plan-head__name">License Tier 1</span>
-              <span class="plan-head__price">$79</span>
-              <span class="plan-head__was">(was <s>$144</s>)</span>
+              <span class="plan-head__price">₦30,000</span>
               <a class="btn btn--amber" href="#" data-plan="tier1">Buy License Tier 1</a>
               <span class="plan-head__note">One time payment</span>
             </th>
 
             <th scope="col" class="plan-head">
               <span class="plan-head__name">License Tier 2</span>
-              <span class="plan-head__price">$159</span>
-              <span class="plan-head__was">(was <s>$360</s>)</span>
+              <span class="plan-head__price">₦50,000</span>
               <a class="btn btn--amber" href="#" data-plan="tier2">Buy License Tier 2</a>
               <span class="plan-head__note">One time payment</span>
             </th>
 
             <th scope="col" class="plan-head is-featured">
               <span class="plan-head__name">License Tier 3</span>
-              <span class="plan-head__price">$299</span>
-              <span class="plan-head__was">(was <s>$1,440</s>)</span>
+              <span class="plan-head__price">₦100,000</span>
               <a class="btn btn--amber" href="#" data-plan="tier3">Buy License Tier 3</a>
               <span class="plan-head__note">One time payment</span>
             </th>
 
             <th scope="col" class="plan-head">
               <span class="plan-head__name">License Tier 4</span>
-              <span class="plan-head__price">$499</span>
-              <span class="plan-head__was">(was <s>$2,000</s>)</span>
+              <span class="plan-head__price">₦200,000</span>
               <a class="btn btn--amber" href="#" data-plan="tier4">Buy License Tier 4</a>
               <span class="plan-head__note">One time payment</span>
             </th>
@@ -1733,7 +1728,9 @@ a{color:inherit}
   <div class="container">
     <div class="final-cta">
       <h2>Go from idea you keep explaining to a book people can buy</h2>
-      <p>$79 once, lifetime access, every update we ship. Price goes to $144 when the launch ends. Access opens within 30 days. Refundable any time before then, and for 7 days after.</p>
+      <!-- TODO: the launch-end anchor below is still the copy doc's USD figure.
+           Replace "$144" with the Naira anchor once it is confirmed. -->
+      <p>₦30,000 once, lifetime access, every update we ship. Price goes to $144 when the launch ends. Access opens within 30 days. Refundable any time before then, and for 7 days after.</p>
 
       <a class="btn btn--gold" href="#" data-plan="cta-final">Get Lifetime Access</a>
 
@@ -1777,15 +1774,18 @@ a{color:inherit}
    ========================================================================== */
 
 var PAYMENT_LINKS = {
-  tier1:        '',   // "Buy License Tier 1" — pricing table
-  tier2:        '',   // "Buy License Tier 2" — pricing table
-  tier3:        '',   // "Buy License Tier 3" — pricing table
-  tier4:        '',   // "Buy License Tier 4" — pricing table
-  hero:         '',   // "Get Lifetime Access" — hero order box
-  'cta-final':  ''    // "Get Lifetime Access" — closing blue panel
-  /* 'cta-solution' and 'cta-vs' are in-page jumps to #pricing, so they need
-     no URL. Add keys for them here if you would rather they go to checkout. */
+  tier1: 'https://paystack.shop/pay/ch046usb9s',   // ₦30,000
+  tier2: 'https://paystack.shop/pay/nyz9jet-vb',   // ₦50,000
+  tier3: 'https://paystack.shop/pay/rphgefoz66',   // ₦100,000
+  tier4: 'https://paystack.shop/pay/qiu8pgy866'    // ₦200,000
+
+  /* The hero order box's button follows its tier dropdown, and the closing
+     panel's gold button uses tier1 (the price quoted beside it), so neither
+     needs its own entry. The two orange mid-page buttons jump to #pricing. */
 };
+
+// Buttons that are not a tier of their own, mapped to the tier they sell.
+var CTA_TIER = { 'cta-final': 'tier1' };
 
 var LAUNCH_ENDS = '2026-10-31T23:59:59Z';
 
@@ -1794,12 +1794,13 @@ var LAUNCH_ENDS = '2026-10-31T23:59:59Z';
    Wire payment links onto their buttons
    -------------------------------------------------------------------------- */
 (function () {
-  Object.keys(PAYMENT_LINKS).forEach(function (key) {
-    var url = PAYMENT_LINKS[key];
-    if (!url) return;
-    document.querySelectorAll('[data-plan="' + key + '"]').forEach(function (el) {
-      el.setAttribute('href', url);
-    });
+  function urlFor(key) {
+    return PAYMENT_LINKS[key] || PAYMENT_LINKS[CTA_TIER[key]] || '';
+  }
+
+  document.querySelectorAll('[data-plan]').forEach(function (el) {
+    var url = urlFor(el.dataset.plan);
+    if (url) el.setAttribute('href', url);
   });
 })();
 
@@ -1810,14 +1811,24 @@ var LAUNCH_ENDS = '2026-10-31T23:59:59Z';
 (function () {
   var select = document.querySelector('[data-tier-select]');
   var price  = document.querySelector('[data-order-price]');
-  var was    = document.querySelector('[data-order-was]');
-  if (!select || !price || !was) return;
+  var button = document.querySelector('[data-plan="hero"]');
+  if (!select || !price) return;
 
-  select.addEventListener('change', function () {
+  function sync() {
     var opt = select.options[select.selectedIndex];
     price.textContent = opt.dataset.price;
-    was.textContent   = opt.dataset.was;
-  });
+
+    var url = PAYMENT_LINKS[opt.value];
+    if (!button) return;
+    if (url) {
+      button.setAttribute('href', url);
+    } else {
+      button.removeAttribute('href');
+    }
+  }
+
+  select.addEventListener('change', sync);
+  sync();
 })();
 
 
