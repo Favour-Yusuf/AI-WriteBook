@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIWriteBook — Publish a finished book without writing every chapter from scratch</title>
+<meta name="description" content="The chapters sound like you wrote them, and the file at the end is one Amazon accepts. Nothing to format, nobody to hire.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================================
+   AIWriteBook landing page
+   --------------------------------------------------------------------------
+   EDITING GUIDE
+   - Colours, spacing and radii: the :root token block directly below.
+   - Payment links: the PAYMENT_LINKS object in the <script> at the bottom.
+   - Launch countdown end date: LAUNCH_ENDS in the same <script>.
+   - Copy: edit the HTML directly; each section is marked with a banner comment.
+   - Images: every <div class="ph"> is an image placeholder awaiting a real asset.
+   ========================================================================== */
+
+:root{
+  /* Brand colours sampled from the Canva design */
+  --orange:        #FF751F;
+  --orange-dark:   #E8620F;
+  --orange-shadow: #B8500F;
+  --yellow:        #FFED00;
+  --amber:         #FFBD04;
+  --amber-dark:    #E0A500;
+  --blue:          #2961D9;
+  --blue-banner:   #0E6EF4;
+  --blue-light:    #65A2F7;
+  --gold:          #FFD24D;
+  --gold-dark:     #E0B52E;
+
+  --ink:      #0E1116;
+  --body:     #3C444F;
+  --muted:    #6B7480;
+  --line:     #E2E5EA;
+  --line-soft:#EDF0F3;
+  --panel:    #F6F9FE;
+  --panel-2:  #F7F8FA;
+  --white:    #FFFFFF;
+  --black:    #060607;
+  --tick:     #22C55E;
+  --cross:    #DC2626;
+
+  --radius-sm: 8px;
+  --radius:    12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  --shadow-card: 0 1px 2px rgba(14,17,22,.04), 0 6px 20px rgba(14,17,22,.06);
+  --shadow-lift: 0 2px 4px rgba(14,17,22,.05), 0 14px 40px rgba(14,17,22,.10);
+
+  --container: 1120px;
+  --gutter: 20px;
+
+  /* Vertical rhythm between major sections */
+  --section-y: 88px;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html{-webkit-text-size-adjust:100%}
+
+body{
+  margin:0;
+  background:var(--white);
+  color:var(--body);
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+img{max-width:100%;display:block}
+
+h1,h2,h3,h4{
+  font-family:'Poppins','Inter',system-ui,sans-serif;
+  color:var(--ink);
+  margin:0;
+  line-height:1.18;
+  letter-spacing:-.015em;
+}
+
+p{margin:0}
+ul{margin:0;padding:0;list-style:none}
+
+a{color:inherit}
+
+.container{
+  width:100%;
+  max-width:var(--container);
+  margin-inline:auto;
+  padding-inline:var(--gutter);
+}
+
+.section{padding-block:var(--section-y)}
+
+/* Screen-reader-only helper */
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+
+/* --------------------------------------------------------------------------
+   Shared: image placeholders
+   Every real asset from the Canva file is still outstanding. Each placeholder
+   keeps the exact box, ratio and border of the design so a real image can be
+   dropped straight in.
+   -------------------------------------------------------------------------- */
+.ph{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--white);
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.45;
+  padding:16px;
+  min-height:0;
+}
+
+/* --------------------------------------------------------------------------
+   Shared: buttons
+   -------------------------------------------------------------------------- */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-family:'Poppins','Inter',sans-serif;
+  font-weight:600;
+  text-align:center;
+  text-decoration:none;
+  border:none;
+  cursor:pointer;
+  border-radius:var(--radius-pill);
+  transition:transform .12s ease, box-shadow .12s ease, background-color .12s ease;
+  min-height:48px;
+}
+.btn:active{transform:translateY(1px)}
+
+/* Primary orange pill — used for the standalone section CTAs */
+.btn--orange{
+  background:var(--orange);
+  color:var(--white);
+  font-size:15px;
+  padding:14px 34px;
+  box-shadow:0 3px 0 var(--orange-shadow);
+}
+.btn--orange:hover{background:var(--orange-dark)}
+
+/* Large stacked-label CTA inside the hero order box */
+.btn--hero{
+  background:var(--orange);
+  color:var(--white);
+  width:100%;
+  flex-direction:column;
+  gap:2px;
+  padding:14px 20px;
+  border-radius:var(--radius);
+  box-shadow:0 3px 0 var(--orange-shadow);
+  min-height:62px;
+}
+.btn--hero:hover{background:var(--orange-dark)}
+.btn--hero .btn__main{font-size:17px;line-height:1.25}
+.btn--hero .btn__sub{font-size:11.5px;font-weight:500;opacity:.92;font-family:'Inter',sans-serif}
+
+/* Amber pill used in each pricing-table column header */
+.btn--amber{
+  background:var(--amber);
+  color:var(--ink);
+  font-size:13px;
+  padding:11px 16px;
+  width:100%;
+  min-height:42px;
+  box-shadow:0 2px 0 var(--amber-dark);
+}
+.btn--amber:hover{background:var(--amber-dark)}
+
+/* Gold pill on the closing blue CTA panel */
+.btn--gold{
+  background:var(--gold);
+  color:var(--ink);
+  font-size:15px;
+  padding:14px 34px;
+  box-shadow:0 3px 0 var(--gold-dark);
+}
+.btn--gold:hover{background:var(--gold-dark)}
+
+.cta-row{display:flex;justify-content:center;padding-top:8px}
+
+/* ==========================================================================
+   HEADER — logo, launch countdown
+   ========================================================================== */
+.site-header{
+  padding:18px var(--gutter) 0;
+}
+.header-bar{
+  max-width:var(--container);
+  margin-inline:auto;
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:16px;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--white);
+  padding:12px 20px;
+}
+.logo{
+  font-family:'Poppins',sans-serif;
+  font-weight:700;
+  font-size:17px;
+  color:var(--ink);
+  letter-spacing:-.02em;
+  text-decoration:none;
+}
+
+/* Countdown -------------------------------------------------------------- */
+.countdown{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  border:1.5px solid var(--ink);
+  border-radius:var(--radius-sm);
+  padding:7px 14px;
+}
+.countdown__label{
+  font-size:11px;
+  font-weight:700;
+  line-height:1.3;
+  color:var(--ink);
+  text-align:left;
+  white-space:nowrap;
+}
+.countdown__label mark{
+  display:block;
+  width:fit-content;
+  background:var(--yellow);
+  color:var(--ink);
+  padding:0 3px;
+}
+.countdown__clock{display:flex;align-items:flex-start;gap:6px}
+.cd-unit{display:flex;flex-direction:column;align-items:center;min-width:26px}
+.cd-unit__num{
+  font-family:'Poppins',sans-serif;
+  font-weight:700;
+  font-size:15px;
+  line-height:1.1;
+  color:var(--ink);
+  font-variant-numeric:tabular-nums;
+}
+.cd-unit__name{font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.cd-sep{
+  font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--muted);line-height:1.2;
+}
+
+/* The design's right-hand header slot carried no copy, so it is left empty
+   and simply balances the grid so the countdown stays optically centred. */
+.header-spacer{min-height:1px}
+
+/* ==========================================================================
+   HERO
+   ========================================================================== */
+.hero{padding-top:26px}
+
+.eyebrow{
+  display:block;
+  width:fit-content;
+  margin-inline:auto;
+  text-align:center;
+  background:var(--yellow);
+  color:var(--ink);
+  font-size:13px;
+  font-weight:600;
+  padding:3px 10px;
+  border-radius:3px;
+}
+
+.hero__title{
+  margin-top:16px;
+  text-align:center;
+  font-size:clamp(28px,4.4vw,48px);
+  font-weight:700;
+  max-width:22ch;
+  margin-inline:auto;
+}
+.hero__sub{
+  margin-top:14px;
+  text-align:center;
+  max-width:62ch;
+  margin-inline:auto;
+  font-size:clamp(15px,1.35vw,17px);
+  color:var(--body);
+}
+
+.hero__grid{
+  margin-top:40px;
+  display:grid;
+  grid-template-columns:minmax(0,1.32fr) minmax(0,1fr);
+  gap:26px;
+  align-items:start;
+}
+
+/* Hero left column ------------------------------------------------------- */
+.hero__video{aspect-ratio:16/10}
+.hero__thumbs{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:8px;
+}
+.hero__thumbs .ph{aspect-ratio:1/1;font-size:10px;padding:6px;border-radius:var(--radius-sm)}
+
+.hero__copy{margin-top:20px}
+.hero__copy p{font-size:15px}
+.hero__tldr{
+  margin-top:18px;
+  font-family:'Poppins',sans-serif;
+  font-weight:700;
+  font-size:15px;
+  color:var(--ink);
+}
+.hero__list{margin-top:10px;display:grid;gap:9px}
+.hero__list li{
+  position:relative;
+  padding-left:18px;
+  font-size:14.5px;
+}
+.hero__list li::before{
+  content:"";
+  position:absolute;
+  left:2px;top:9px;
+  width:5px;height:5px;
+  border-radius:50%;
+  background:var(--ink);
+}
+
+/* Hero right column — order box ------------------------------------------ */
+.order-box{
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+  background:var(--white);
+  box-shadow:var(--shadow-card);
+  padding:22px 20px;
+  position:sticky;
+  top:20px;
+}
+.order-box__title{
+  text-align:center;
+  font-size:19px;
+  font-weight:700;
+}
+
+.order-box .countdown{
+  margin-top:16px;
+  width:100%;
+  justify-content:space-between;
+  border-color:var(--line);
+  border-width:1px;
+  padding:9px 12px;
+}
+.order-box .countdown__label{font-size:10.5px;max-width:105px}
+
+.price-row{
+  margin-top:16px;
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.price-row__off{
+  color:var(--ink);
+  font-family:'Poppins',sans-serif;
+  font-weight:700;
+  font-size:26px;
+  line-height:1.1;
+}
+.price-row__was{
+  color:var(--muted);
+  font-size:14px;
+  text-decoration:line-through;
+}
+
+.field{margin-top:14px}
+.field__head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:6px;
+}
+.field__label{font-size:13px;font-weight:600;color:var(--ink)}
+.field__link{font-size:12.5px;color:var(--blue);text-decoration:none}
+.field__link:hover{text-decoration:underline}
+
+.field select,
+.field input{
+  width:100%;
+  font-family:'Inter',sans-serif;
+  font-size:14px;
+  color:var(--ink);
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  padding:11px 12px;
+  min-height:44px;
+}
+.field select{
+  appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%230E1116' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat:no-repeat;
+  background-position:right 12px center;
+  padding-right:34px;
+}
+.field input::placeholder{color:var(--muted)}
+.field select:focus,
+.field input:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:transparent}
+
+.assure{margin-top:14px;display:grid;gap:7px}
+.assure li{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  font-size:12.5px;
+  color:var(--body);
+}
+.assure svg{flex:none;margin-top:2px}
+
+.order-box .btn--hero{margin-top:16px}
+
+.pay-logos{
+  margin-top:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.pay-logos .ph{
+  font-size:9.5px;
+  padding:5px 9px;
+  border-radius:5px;
+  min-height:26px;
+}
+
+/* ==========================================================================
+   WHAT IS AIWRITEBOOK — single bordered card
+   ========================================================================== */
+.about-card{
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+  background:var(--white);
+  box-shadow:var(--shadow-lift);
+  padding:clamp(24px,3.6vw,44px);
+  max-width:900px;
+  margin-inline:auto;
+}
+.about-card h2{
+  text-align:center;
+  font-size:clamp(23px,2.8vw,32px);
+  font-weight:700;
+}
+.about-card__body{margin-top:20px;display:grid;gap:15px}
+.about-card__body p{font-size:15px}
+
+/* ==========================================================================
+   CARD GRIDS — problem + solution
+   ========================================================================== */
+.section-title{
+  text-align:center;
+  font-size:clamp(23px,3vw,34px);
+  font-weight:700;
+  max-width:24ch;
+  margin-inline:auto;
+}
+.section-title--wide{max-width:34ch}
+
+.card-grid{
+  margin-top:34px;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+}
+.card{
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+  background:var(--white);
+  box-shadow:var(--shadow-card);
+  padding:24px 20px;
+  text-align:center;
+}
+.card h3{
+  font-size:15.5px;
+  font-weight:600;
+  line-height:1.32;
+}
+.card p{margin-top:12px;font-size:13.5px;line-height:1.62;color:var(--muted)}
+
+/* ==========================================================================
+   FEATURES — alternating text / screenshot rows
+   ========================================================================== */
+.feature{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:clamp(24px,5vw,64px);
+  align-items:center;
+  margin-top:56px;
+}
+.feature:first-of-type{margin-top:40px}
+.feature__media .ph{aspect-ratio:4/3}
+
+/* Even rows put the screenshot on the left */
+.feature--flip .feature__body{order:2}
+.feature--flip .feature__media{order:1}
+
+.feature h3{font-size:clamp(19px,2.1vw,24px);font-weight:700}
+.feature__list{margin-top:16px;display:grid;gap:12px}
+.feature__list li{
+  position:relative;
+  padding-left:18px;
+  font-size:14.5px;
+  line-height:1.6;
+  color:var(--muted);
+}
+.feature__list li::before{
+  content:"";
+  position:absolute;
+  left:2px;top:9px;
+  width:5px;height:5px;
+  border-radius:50%;
+  background:var(--ink);
+}
+.feature__list b{color:var(--ink);font-weight:600}
+
+/* ==========================================================================
+   PRICING — comparison table
+   ========================================================================== */
+.pricing__title{
+  text-align:center;
+  font-size:clamp(22px,2.8vw,31px);
+  font-weight:700;
+  letter-spacing:.005em;
+  max-width:26ch;
+  margin-inline:auto;
+}
+.pricing__sub{
+  margin-top:14px;
+  text-align:center;
+  max-width:74ch;
+  margin-inline:auto;
+  font-size:14.5px;
+  color:var(--muted);
+}
+
+.table-scroll{
+  margin-top:34px;
+  /* position:relative makes this element the containing block for the
+     visually-hidden .sr-only spans inside the table; without it they escape
+     the scroller and push the whole page wide on small screens. */
+  position:relative;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  border-radius:var(--radius-lg);
+}
+.ptable{
+  width:100%;
+  min-width:880px;
+  border-collapse:separate;
+  border-spacing:0;
+  background:var(--white);
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+}
+.ptable th,.ptable td{
+  padding:11px 14px;
+  text-align:center;
+  vertical-align:middle;
+  border-bottom:1px solid var(--line-soft);
+  font-size:13px;
+}
+.ptable tbody tr:last-child th,
+.ptable tbody tr:last-child td{border-bottom:none}
+
+/* Feature-name column stays put while the tiers scroll sideways */
+.ptable th[scope="row"],
+.ptable thead th:first-child{
+  position:sticky;
+  left:0;
+  z-index:2;
+  background:var(--white);
+  text-align:left;
+  font-weight:500;
+  color:var(--body);
+  min-width:210px;
+  box-shadow:1px 0 0 var(--line-soft);
+}
+.ptable thead th:first-child{z-index:3}
+
+.plan-head{
+  padding:20px 14px 18px;
+  vertical-align:top;
+  border-bottom:1px solid var(--line);
+  background:var(--white);
+}
+.plan-head__name{
+  font-size:12px;
+  color:var(--muted);
+  font-weight:500;
+  display:block;
+}
+.plan-head__price{
+  display:block;
+  margin-top:4px;
+  font-family:'Poppins',sans-serif;
+  font-weight:700;
+  font-size:22px;
+  color:var(--ink);
+  line-height:1.15;
+}
+.plan-head__was{
+  display:block;
+  margin-top:2px;
+  font-size:11.5px;
+  color:var(--muted);
+}
+.plan-head__was s{text-decoration:line-through}
+.plan-head .btn--amber{margin-top:12px}
+.plan-head__note{
+  display:block;
+  margin-top:8px;
+  font-size:10.5px;
+  color:var(--muted);
+}
+
+/* Highlighted tier column (matches the emphasised column in the design) */
+.ptable .is-featured{background:#F7FAFF}
+.plan-head.is-featured{
+  border-top:6px solid var(--blue-banner);
+  box-shadow:inset 1px 0 0 var(--blue-light), inset -1px 0 0 var(--blue-light);
+}
+.ptable td.is-featured{box-shadow:inset 1px 0 0 var(--blue-light), inset -1px 0 0 var(--blue-light)}
+.ptable tbody tr:last-child td.is-featured{
+  box-shadow:inset 1px 0 0 var(--blue-light), inset -1px 0 0 var(--blue-light), inset 0 -1px 0 var(--blue-light);
+}
+
+.mark{display:inline-block;width:11px;height:11px;border-radius:50%}
+.mark--yes{background:var(--tick)}
+.mark--no{background:var(--cross)}
+
+.scroll-hint{
+  display:none;
+  margin-top:10px;
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.legend{
+  margin-top:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:22px;
+  flex-wrap:wrap;
+  font-size:12.5px;
+  color:var(--muted);
+}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+
+.guarantee-bar{
+  margin-top:20px;
+  padding-top:18px;
+  border-top:1px solid var(--line-soft);
+  text-align:center;
+  font-size:13.5px;
+  font-weight:600;
+  color:var(--ink);
+}
+
+/* ==========================================================================
+   VS COMPARISON
+   ========================================================================== */
+.vs__title{text-align:center;font-size:clamp(22px,2.8vw,31px);font-weight:700}
+.vs__sub{
+  margin-top:12px;
+  text-align:center;
+  font-size:15px;
+  color:var(--muted);
+  max-width:64ch;
+  margin-inline:auto;
+}
+.vs__grid{
+  margin-top:34px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:20px;
+  max-width:860px;
+  margin-inline:auto;
+}
+.vs-card{
+  border:1px solid var(--line);
+  border-radius:var(--radius-lg);
+  background:var(--white);
+  box-shadow:var(--shadow-card);
+  overflow:hidden;
+}
+.vs-card__media .ph{
+  aspect-ratio:16/10;
+  border:none;
+  border-bottom:1px solid var(--line);
+  border-radius:0;
+  background:var(--panel-2);
+}
+.vs-card__body{padding:20px}
+.vs-card__title{text-align:center;font-size:16px;font-weight:700}
+.vs-card__list{margin-top:16px;display:grid;gap:11px}
+.vs-card__list li{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  font-size:13.5px;
+  line-height:1.55;
+  padding-bottom:11px;
+  border-bottom:1px solid var(--line-soft);
+}
+.vs-card__list li:last-child{border-bottom:none;padding-bottom:0}
+.vs-card__list svg{flex:none;margin-top:2px}
+
+/* ==========================================================================
+   INTEGRATIONS
+   ========================================================================== */
+.integrations{
+  background:var(--panel);
+  border-radius:var(--radius-lg);
+  padding:clamp(28px,4vw,48px) clamp(20px,3vw,40px);
+  text-align:center;
+}
+.integrations h2{font-size:clamp(21px,2.5vw,28px);font-weight:700}
+.integrations p{
+  margin-top:12px;
+  margin-inline:auto;
+  max-width:66ch;
+  font-size:14.5px;
+  color:var(--muted);
+}
+.logo-row{
+  margin-top:26px;
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.logo-row .ph{
+  background:var(--white);
+  border-color:#E7ECF4;
+  width:132px;
+  min-height:62px;
+  font-size:12px;
+  font-weight:500;
+}
+
+/* ==========================================================================
+   FOUNDER / ABOUT
+   ========================================================================== */
+.founder{
+  background:var(--panel-2);
+  border-radius:var(--radius-lg);
+  padding:clamp(26px,3.6vw,46px);
+}
+.founder h2{
+  text-align:center;
+  font-size:clamp(21px,2.6vw,29px);
+  font-weight:700;
+}
+.founder__grid{
+  margin-top:28px;
+  display:grid;
+  grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);
+  gap:clamp(22px,3.5vw,44px);
+  align-items:center;
+}
+.founder__grid p{font-size:14.5px;line-height:1.7}
+.founder__media{max-width:270px;justify-self:end;width:100%}
+.founder__media .ph{aspect-ratio:3/4;background:var(--white)}
+
+/* ==========================================================================
+   FAQ — accordion
+   ========================================================================== */
+.faq__title{text-align:center;font-size:clamp(23px,2.8vw,32px);font-weight:700}
+.faq__list{
+  margin-top:30px;
+  max-width:820px;
+  margin-inline:auto;
+  display:grid;
+  gap:10px;
+}
+.faq-item{
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--white);
+  box-shadow:var(--shadow-card);
+  overflow:hidden;
+}
+.faq-item summary{
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:16px 20px;
+  min-height:56px;
+  font-family:'Poppins',sans-serif;
+  font-weight:600;
+  font-size:15px;
+  color:var(--ink);
+}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+.faq-item summary::after{
+  content:"";
+  flex:none;
+  width:11px;height:11px;
+  border-right:2px solid var(--ink);
+  border-bottom:2px solid var(--ink);
+  transform:rotate(45deg) translate(-2px,-2px);
+  transition:transform .18s ease;
+}
+.faq-item[open] summary::after{transform:rotate(-135deg) translate(-3px,-3px)}
+.faq-item__body{padding:0 20px 18px}
+.faq-item__body p{font-size:14.5px;color:var(--muted)}
+
+/* ==========================================================================
+   CLOSING CTA — blue panel
+   ========================================================================== */
+.final-cta{
+  background:var(--blue);
+  border-radius:var(--radius-lg);
+  color:var(--white);
+  text-align:center;
+  padding:clamp(34px,5vw,60px) clamp(20px,4vw,56px);
+  max-width:900px;
+  margin-inline:auto;
+}
+.final-cta h2{
+  color:var(--white);
+  font-size:clamp(22px,2.9vw,32px);
+  font-weight:700;
+  max-width:22ch;
+  margin-inline:auto;
+}
+.final-cta p{
+  margin-top:14px;
+  margin-inline:auto;
+  max-width:62ch;
+  font-size:14.5px;
+  color:rgba(255,255,255,.92);
+}
+.final-cta .btn--gold{margin-top:24px}
+.final-cta__trust{
+  margin-top:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:22px;
+  flex-wrap:wrap;
+  font-size:12.5px;
+  color:rgba(255,255,255,.92);
+}
+.final-cta__trust span{display:inline-flex;align-items:center;gap:7px}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.site-footer{
+  margin-top:var(--section-y);
+  background:var(--black);
+  color:rgba(255,255,255,.72);
+  text-align:center;
+  padding:22px var(--gutter);
+}
+.site-footer__brand{
+  font-family:'Poppins',sans-serif;
+  font-weight:600;
+  font-size:14px;
+  color:var(--white);
+}
+.site-footer__legal{margin-top:6px;font-size:12px}
+
+/* ==========================================================================
+   RESPONSIVE
+   Breakpoints follow how the design's columns need to break down, rather
+   than simply scaling the desktop layout.
+   ========================================================================== */
+
+/* --- Laptop / small desktop ------------------------------------------- */
+@media (max-width:1040px){
+  :root{--section-y:74px}
+  .hero__grid{grid-template-columns:1fr;gap:30px}
+  .order-box{position:static;max-width:520px;margin-inline:auto;width:100%}
+  .hero__title{max-width:26ch}
+}
+
+/* --- Tablet ------------------------------------------------------------ */
+@media (max-width:860px){
+  .card-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .feature{grid-template-columns:1fr;gap:22px;margin-top:44px}
+  /* On one column the screenshot always sits below its text */
+  .feature--flip .feature__body{order:1}
+  .feature--flip .feature__media{order:2}
+  .feature__media .ph{aspect-ratio:16/10}
+  .founder__grid{grid-template-columns:1fr;gap:24px}
+  .founder__media{max-width:280px;margin-inline:auto;justify-self:center}
+  .vs__grid{grid-template-columns:1fr;max-width:520px}
+  .scroll-hint{display:block}
+  .header-bar{grid-template-columns:auto 1fr;padding:12px 16px}
+  .header-spacer{display:none}
+  .countdown{justify-self:end}
+}
+
+/* --- Large phone ------------------------------------------------------- */
+@media (max-width:620px){
+  :root{--section-y:56px;--gutter:16px}
+
+  body{font-size:15px}
+
+  /* Header stacks so the countdown keeps full-size touch targets */
+  .header-bar{
+    grid-template-columns:1fr;
+    justify-items:center;
+    gap:12px;
+    text-align:center;
+  }
+  .countdown{justify-self:center;width:100%;justify-content:space-between}
+  .countdown__label{max-width:none;flex:1}
+
+  .hero{padding-top:20px}
+  .hero__title{max-width:none;font-size:clamp(26px,7.4vw,34px)}
+  .hero__sub{font-size:15px}
+  .hero__grid{margin-top:28px}
+
+  /* Six thumbnails become two rows of three rather than six slivers */
+  .hero__thumbs{grid-template-columns:repeat(3,1fr);gap:8px}
+
+  .card-grid{grid-template-columns:1fr;gap:12px}
+  .card{text-align:left;padding:20px 18px}
+
+  .section-title,.section-title--wide{max-width:none}
+
+  .ptable{min-width:640px}
+  .ptable th,.ptable td{padding:10px 10px;font-size:12px}
+  .ptable th[scope="row"],.ptable thead th:first-child{min-width:150px}
+  .plan-head__price{font-size:18px}
+  .btn--amber{font-size:12px;padding:10px 10px}
+
+  .legend{gap:14px}
+
+  .faq-item summary{font-size:14.5px;padding:14px 16px}
+  .faq-item__body{padding:0 16px 16px}
+
+  .final-cta h2{max-width:none}
+  .final-cta .btn--gold{width:100%}
+
+  .btn--orange{width:100%;max-width:340px}
+}
+
+/* --- Small phone ------------------------------------------------------- */
+@media (max-width:400px){
+  .cd-unit{min-width:22px}
+  .cd-unit__num{font-size:14px}
+  .countdown{gap:8px;padding:8px 10px}
+  .logo-row .ph{width:100%;max-width:220px}
+}
+
+/* --- Motion preference -------------------------------------------------- */
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+
+<body>
+
+<!-- ======================================================================
+     HEADER
+     ====================================================================== -->
+<header class="site-header">
+  <div class="header-bar">
+    <a class="logo" href="#top">AIWriteBook</a>
+
+    <div class="countdown" data-countdown>
+      <p class="countdown__label"><mark>Launch price</mark> ends in</p>
+      <div class="countdown__clock">
+        <div class="cd-unit"><span class="cd-unit__num" data-cd="days">00</span><span class="cd-unit__name">Days</span></div>
+        <span class="cd-sep">:</span>
+        <div class="cd-unit"><span class="cd-unit__num" data-cd="hours">00</span><span class="cd-unit__name">Hrs</span></div>
+        <span class="cd-sep">:</span>
+        <div class="cd-unit"><span class="cd-unit__num" data-cd="minutes">00</span><span class="cd-unit__name">Min</span></div>
+        <span class="cd-sep">:</span>
+        <div class="cd-unit"><span class="cd-unit__num" data-cd="seconds">00</span><span class="cd-unit__name">Sec</span></div>
+      </div>
+    </div>
+
+    <!-- The design's right-hand header slot carried no copy; left empty. -->
+    <div class="header-spacer" aria-hidden="true"></div>
+  </div>
+</header>
+
+
+<main id="top">
+
+<!-- ======================================================================
+     HERO
+     ====================================================================== -->
+<section class="hero">
+  <div class="container">
+
+    <span class="eyebrow">For aspiring authors, freelancers and solopreneurs</span>
+
+    <h1 class="hero__title">Publish a finished book without writing every chapter from scratch</h1>
+
+    <p class="hero__sub">The chapters sound like you wrote them, and the file at the end is one Amazon accepts. Nothing to format, nobody to hire&hellip;</p>
+
+    <div class="hero__grid">
+
+      <!-- Hero left: video, thumbnails, supporting copy -->
+      <div class="hero__left">
+        <div class="ph hero__video">&lt;insert emo video&gt;</div>
+
+        <div class="hero__thumbs">
+          <div class="ph">Image</div>
+          <div class="ph">Image</div>
+          <div class="ph">Image</div>
+          <div class="ph">Image</div>
+          <div class="ph">Image</div>
+          <div class="ph">Image</div>
+        </div>
+
+        <div class="hero__copy">
+          <p>You signed up to write a book, not format EPUBs, and source cover art after hours. AIWriteBook helps you write voice-matched chapters, design a cover, and export a KDP-ready file.</p>
+
+          <p class="hero__tldr">TL;DR</p>
+          <ul class="hero__list">
+            <li>Turn an idea into a full manuscript with chapters, cover, and a KDP-ready export, all in one place</li>
+            <li>Train it on your old writing so the chapters sound like you instead of like every other AI book</li>
+            <li>Pay once. Lifetime access. Full refund any time before you get access, and for 7 days after.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Hero right: order box -->
+      <aside class="order-box">
+        <h2 class="order-box__title">Get Lifetime Access</h2>
+
+        <div class="countdown" data-countdown>
+          <p class="countdown__label"><mark>Launch price</mark> ends in</p>
+          <div class="countdown__clock">
+            <div class="cd-unit"><span class="cd-unit__num" data-cd="days">00</span><span class="cd-unit__name">Days</span></div>
+            <span class="cd-sep">:</span>
+            <div class="cd-unit"><span class="cd-unit__num" data-cd="hours">00</span><span class="cd-unit__name">Hrs</span></div>
+            <span class="cd-sep">:</span>
+            <div class="cd-unit"><span class="cd-unit__num" data-cd="minutes">00</span><span class="cd-unit__name">Min</span></div>
+            <span class="cd-sep">:</span>
+            <div class="cd-unit"><span class="cd-unit__num" data-cd="seconds">00</span><span class="cd-unit__name">Sec</span></div>
+          </div>
+        </div>
+
+        <p class="price-row">
+          <span class="price-row__off" data-order-price>$79</span>
+          <span class="price-row__was">was <s data-order-was>$144</s></span>
+        </p>
+
+        <div class="field">
+          <div class="field__head">
+            <label class="field__label" for="tier-select">Select your license tier</label>
+            <a class="field__link" href="#pricing">View plan details</a>
+          </div>
+          <select id="tier-select" data-tier-select>
+            <option value="tier1" data-price="$79" data-was="$144" selected>License Tier 1 &mdash; $79</option>
+            <option value="tier2" data-price="$159" data-was="$360">License Tier 2 &mdash; $159</option>
+            <option value="tier3" data-price="$299" data-was="$1,440">License Tier 3 &mdash; $299</option>
+            <option value="tier4" data-price="$499" data-was="$2,000">License Tier 4 &mdash; $499</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="sr-only" for="coupon">Coupon code</label>
+          <input id="coupon" type="text" placeholder="Coupon code" autocomplete="off">
+        </div>
+
+        <ul class="assure">
+          <li>
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.3 10.6 12 3.6" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>7 Days Money Back Guarantee</span>
+          </li>
+          <li>
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.3 10.6 12 3.6" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>100% Secure Order</span>
+          </li>
+          <li>
+            <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.3 10.6 12 3.6" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Get Lifetime Access</span>
+          </li>
+        </ul>
+
+        <a class="btn btn--hero" href="#" data-plan="hero">
+          <span class="btn__main">Get Lifetime Access</span>
+          <span class="btn__sub">7 Days Money Back Guarantee</span>
+        </a>
+
+        <div class="pay-logos">
+          <div class="ph">Payment logo</div>
+          <div class="ph">Payment logo</div>
+          <div class="ph">Payment logo</div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     WHAT IS AIWRITEBOOK?
+     ====================================================================== -->
+<section class="section">
+  <div class="container">
+    <div class="about-card">
+      <h2>What Is AIWriteBook?</h2>
+      <div class="about-card__body">
+        <p>AIWriteBook is a faster way to write and publish a book, built for people who have the idea, the knowledge, or the story, but not the six free months.</p>
+        <p>We do this by turning your idea into an outline, then the outline into full chapters, using your own writing as the reference for tone. You are editing and steering from the first day instead of staring at a blank page.</p>
+        <p>And as a result, you go from something you keep meaning to start to a polished file you can upload to Amazon, without the parts of writing a book that make most people quit halfway.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     PROBLEM
+     ====================================================================== -->
+<section class="section">
+  <div class="container">
+    <h2 class="section-title">Writing a book is harder than it needs to be</h2>
+
+    <div class="card-grid">
+      <article class="card">
+        <h3>The blank page wins more often than it loses</h3>
+        <p>You know what the book is about. Turning that into chapter one, then chapter two, then eleven more, is a different job entirely, and most people never get past the second one.</p>
+      </article>
+      <article class="card">
+        <h3>Your ideas end up scattered across five places</h3>
+        <p>Research in browser tabs, notes in your phone, an outline in a Google Doc you last opened in March, and two draft chapters in a folder you can't remember naming.</p>
+      </article>
+      <article class="card">
+        <h3>The book stops sounding like the same book</h3>
+        <p>By chapter eight the tone has drifted, a character's backstory has quietly changed, and the promise you made in the introduction no longer matches what you're delivering.</p>
+      </article>
+      <article class="card">
+        <h3>Finishing is the part almost nobody reaches</h3>
+        <p>Plenty of people write 30,000 words. Far fewer format an EPUB, source cover art, write the blurb, pick categories, and actually hit publish. That's where the book usually dies.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     SOLUTION
+     ====================================================================== -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <h2 class="section-title section-title--wide">AIWriteBook turns your idea into a publish-ready book in one workspace</h2>
+
+    <div class="card-grid">
+      <article class="card">
+        <h3>You start with something on the page</h3>
+        <p>Describe the book and get back an outline and a first chapter. Editing something imperfect is a job you can do on a Tuesday evening. Writing from nothing is not.</p>
+      </article>
+      <article class="card">
+        <h3>One workspace instead of five tabs</h3>
+        <p>Outline, chapters, characters, research, illustrations, and cover all sit in the same place, so you stop losing an hour finding where you left off.</p>
+      </article>
+      <article class="card">
+        <h3>The book holds together as it grows</h3>
+        <p>Your tone, structure, and details stay consistent from the first chapter to the last, because the tool is checking against everything you've already written.</p>
+      </article>
+      <article class="card">
+        <h3>The boring last mile is handled</h3>
+        <p>Cover design, EPUB and PDF export, keyword research, blurb, and category selection are built in, so finishing does not become a second project.</p>
+      </article>
+    </div>
+
+    <div class="cta-row" style="margin-top:34px">
+      <a class="btn btn--orange" href="#pricing" data-plan="cta-solution">Get Lifetime Access</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     FEATURES
+     ====================================================================== -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <h2 class="section-title section-title--wide">Turn a book idea into voice-matched chapters, a professional cover, and a KDP-ready file, for fiction and nonfiction</h2>
+
+    <!-- Feature 1 — text left, screenshot right -->
+    <div class="feature">
+      <div class="feature__body">
+        <h3>Write in your voice, not generic AI voice</h3>
+        <ul class="feature__list">
+          <li><b>Upload your old writing, blog posts, or newsletters and AIWriteBook learns how you actually write,</b> so chapters sound like you</li>
+          <li><b>Rewrite any paragraph inline,</b> or regenerate one weak section without touching the rest of the chapter</li>
+          <li><b>Run grammar, style, and consistency checks</b> across the whole manuscript before you export</li>
+          <li><b>Ask the chapter assistant for a second opinion</b> when you're stuck on pacing or on what comes next</li>
+        </ul>
+      </div>
+      <div class="feature__media">
+        <div class="ph">&lt;insert product image&gt;</div>
+      </div>
+    </div>
+
+    <!-- Feature 2 — screenshot left, text right -->
+    <div class="feature feature--flip">
+      <div class="feature__body">
+        <h3>Build the book from the ground up</h3>
+        <ul class="feature__list">
+          <li><b>Create characters with arcs, backstory, and traits in the character builder,</b> and the book keeps them straight for you</li>
+          <li><b>Plan fiction or nonfiction structure in the outline builder,</b> and edit or regenerate any part of it whenever the book changes direction</li>
+          <li><b>Add references and citations</b> so a research-backed guide holds up when a reader checks your sources</li>
+          <li><b>Import drafts you've already written</b> instead of starting over</li>
+        </ul>
+      </div>
+      <div class="feature__media">
+        <div class="ph">&lt;insert product image&gt;</div>
+      </div>
+    </div>
+
+    <!-- Feature 3 — text left, screenshot right -->
+    <div class="feature">
+      <div class="feature__body">
+        <h3>Illustrate every page, cover to cover</h3>
+        <ul class="feature__list">
+          <li><b>Generate chapter illustrations</b> that stay visually consistent from the first page to the last</li>
+          <li><b>Design covers with unlimited variations</b> until one actually looks like a book you'd buy</li>
+          <li><b>See the illustrations sitting alongside your text</b> in the same workspace, rather than exporting to find out they don't fit</li>
+        </ul>
+      </div>
+      <div class="feature__media">
+        <div class="ph">&lt;insert product image&gt;</div>
+      </div>
+    </div>
+
+    <!-- Feature 4 — screenshot left, text right -->
+    <div class="feature feature--flip">
+      <div class="feature__body">
+        <h3>Export the file and publish it</h3>
+        <ul class="feature__list">
+          <li><b>Ship KDP-ready EPUB, PDF, and DOCX with one click,</b> for Amazon, Apple Books, Kobo, and the rest</li>
+          <li><b>Build your listing with keyword research, blurb generation, and category selection</b> included</li>
+          <li><b>Write natively in over 30 languages,</b> with no separate translation step</li>
+          <li><b>Generate an audiobook version and an author page</b> on the higher tiers</li>
+        </ul>
+      </div>
+      <div class="feature__media">
+        <div class="ph">&lt;insert product image&gt;</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     PRICING
+     ====================================================================== -->
+<section class="section" id="pricing">
+  <div class="container">
+    <!-- Copy doc has this heading in caps; the Canva shows it in sentence case.
+           Copy wins per the brief. To switch to sentence case, use
+           "Choose the plan that's right for you" here. -->
+      <h2 class="pricing__title">CHOOSE THE PLAN THAT'S RIGHT FOR YOU</h2>
+    <p class="pricing__sub">Every tier is a one time payment for lifetime access, including the updates we ship after launch. Full refund any time before you get access, and for 7 days after.</p>
+
+    <div class="table-scroll">
+      <table class="ptable">
+        <caption class="sr-only">Feature comparison across the four AIWriteBook license tiers</caption>
+
+        <thead>
+          <tr>
+            <th scope="col"><span class="sr-only">Feature</span></th>
+
+            <th scope="col" class="plan-head">
+              <span class="plan-head__name">License Tier 1</span>
+              <span class="plan-head__price">$79</span>
+              <span class="plan-head__was">(was <s>$144</s>)</span>
+              <a class="btn btn--amber" href="#" data-plan="tier1">Buy License Tier 1</a>
+              <span class="plan-head__note">One time payment</span>
+            </th>
+
+            <th scope="col" class="plan-head">
+              <span class="plan-head__name">License Tier 2</span>
+              <span class="plan-head__price">$159</span>
+              <span class="plan-head__was">(was <s>$360</s>)</span>
+              <a class="btn btn--amber" href="#" data-plan="tier2">Buy License Tier 2</a>
+              <span class="plan-head__note">One time payment</span>
+            </th>
+
+            <th scope="col" class="plan-head is-featured">
+              <span class="plan-head__name">License Tier 3</span>
+              <span class="plan-head__price">$299</span>
+              <span class="plan-head__was">(was <s>$1,440</s>)</span>
+              <a class="btn btn--amber" href="#" data-plan="tier3">Buy License Tier 3</a>
+              <span class="plan-head__note">One time payment</span>
+            </th>
+
+            <th scope="col" class="plan-head">
+              <span class="plan-head__name">License Tier 4</span>
+              <span class="plan-head__price">$499</span>
+              <span class="plan-head__was">(was <s>$2,000</s>)</span>
+              <a class="btn btn--amber" href="#" data-plan="tier4">Buy License Tier 4</a>
+              <span class="plan-head__note">One time payment</span>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <th scope="row">Credits per month</th>
+            <td>500</td><td>1,000</td><td class="is-featured">2,500</td><td>5,000</td>
+          </tr>
+          <tr>
+            <th scope="row">First chapter written by AI</th>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Chapter outline builder</th>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Character builder</th>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">AI writing style builder</th>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Import existing drafts</th>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Chapter AI chat assistant</th>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Grammar and style check</th>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">References and citations</th>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Write in 30+ languages</th>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">AI illustration generator</th>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Book cover designer</th>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">KDP export and metadata tool</th>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Audiobook generation</th>
+            <td><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Author page</th>
+            <td><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">NSFW books supported</th>
+            <td><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Book series support</th>
+            <td><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Visual books</th>
+            <td><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Book translation</th>
+            <td><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Bring your own key</th>
+            <td><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td class="is-featured"><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+          <tr>
+            <th scope="row">NanoReads distribution</th>
+            <td><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td class="is-featured"><span class="mark mark--no"></span><span class="sr-only">No</span></td>
+            <td><span class="mark mark--yes"></span><span class="sr-only">Yes</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="scroll-hint">Scroll the table sideways to compare all four tiers</p>
+
+    <div class="legend">
+      <span><i class="mark mark--yes"></i> Included</span>
+      <span><i class="mark mark--no"></i> Not included</span>
+    </div>
+
+    <p class="guarantee-bar">7 Days Money Back Guarantee &nbsp;|&nbsp; 100% Secure Order &nbsp;|&nbsp; Get Lifetime Access</p>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     AIWRITEBOOK VS SCRIVENER
+     ====================================================================== -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <h2 class="vs__title">AIWriteBook Vs Scrivener</h2>
+    <p class="vs__sub">The difference between a place to put your writing and something that writes with you&hellip;</p>
+
+    <div class="vs__grid">
+
+      <article class="vs-card">
+        <div class="vs-card__media">
+          <div class="ph">&lt;insert image of competitor brand&gt;</div>
+        </div>
+        <div class="vs-card__body">
+          <h3 class="vs-card__title">Without AIWriteBook</h3>
+          <ul class="vs-card__list">
+            <li>
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 3.5 10.5 10.5M10.5 3.5 3.5 10.5" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/></svg>
+              <span>Your manuscript gets organised, but not a word of it gets written for you</span>
+            </li>
+            <li>
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 3.5 10.5 10.5M10.5 3.5 3.5 10.5" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/></svg>
+              <span>Days spent learning the software before you produce a single chapter</span>
+            </li>
+            <li>
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 3.5 10.5 10.5M10.5 3.5 3.5 10.5" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/></svg>
+              <span>Nothing catches tone drift or a character detail you changed in chapter three</span>
+            </li>
+            <li>
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 3.5 10.5 10.5M10.5 3.5 3.5 10.5" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/></svg>
+              <span>No cover design, so you hire someone or settle for a template</span>
+            </li>
+            <li>
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 3.5 10.5 10.5M10.5 3.5 3.5 10.5" fill="none" stroke="#DC2626" stroke-width="2" stroke-linecap="round"/></svg>
+              <span>Compiling to EPUB means learning the compile settings yourself</span>
+            </li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="vs-card">
+        <div class="vs-card__media">
+          <div class="ph">&lt;insert your product image&gt;</div>
+        </div>
+        <div class="vs-card__body">
+          <h3 class="vs-card__title">With AIWriteBook</h3>
+          <ul class="vs-card__list">
+            <li>
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.3 10.6 12 3.6" fill="none" stroke="#2961D9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Every chapter drafted in your voice, so you edit rather than write</span>
+            </li>
+            <li>
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.3 10.6 12 3.6" fill="none" stroke="#2961D9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Outline started in your first ten minutes, no manual to read</span>
+            </li>
+            <li>
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.3 10.6 12 3.6" fill="none" stroke="#2961D9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Consistency checked across the whole manuscript before you export</span>
+            </li>
+            <li>
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.3 10.6 12 3.6" fill="none" stroke="#2961D9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Unlimited cover variations designed inside the tool</span>
+            </li>
+            <li>
+              <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.3 10.6 12 3.6" fill="none" stroke="#2961D9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>One click export to a file Amazon accepts, with keywords and blurb included</span>
+            </li>
+          </ul>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="cta-row" style="margin-top:36px">
+      <a class="btn btn--orange" href="#pricing" data-plan="cta-vs">Get Lifetime Access</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     INTEGRATIONS
+     ====================================================================== -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="integrations">
+      <h2>Works with the tools you already use</h2>
+      <p>AIWriteBook runs in your browser with nothing to install. It exports straight to Amazon, connects to Google and Google Gemini, and handles payments through Stripe.</p>
+
+      <!-- Real integration logos were not supplied with the design. -->
+      <div class="logo-row">
+        <div class="ph">Amazon</div>
+        <div class="ph">Google</div>
+        <div class="ph">Google Gemini</div>
+        <div class="ph">Stripe</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     FOUNDER / ABOUT
+     ====================================================================== -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="founder">
+      <h2>Streamlined AI-powered book writing</h2>
+
+      <div class="founder__grid">
+        <div class="founder__body">
+          <p>AIWriteBook was born when its founder, a self-published author three unfinished manuscripts deep, got tired of losing track of his own book somewhere around chapter eight. He set out to build a simple, AI-driven workspace that brings outlining, chapter drafting, character and tone tracking, illustration, and cover design into one place. By automating the first draft of every chapter and checking consistency across the whole manuscript, AIWriteBook helps authors finish what they start, keep a two-hundred-page book sounding like one book, and publish without hiring an editor, a designer, or a formatter. The platform's AI writing style builder learns from an author's own past work, so every chapter comes back sounding like them and not like generic AI text.</p>
+        </div>
+        <div class="founder__media">
+          <div class="ph">&lt;insert founder image, or short video&gt;</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     FAQ
+     ====================================================================== -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <h2 class="faq__title">Frequently Asked Questions</h2>
+
+    <div class="faq__list">
+
+      <details class="faq-item" open>
+        <summary>What do I get when I buy?</summary>
+        <div class="faq-item__body">
+          <p>You're buying lifetime access at the founding price. The full workspace opens within 30 days and you'll get an email with your login the day it does. Until then you keep your place, your price, and your refund.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Is the product finished?</summary>
+        <div class="faq-item__body">
+          <p>No, and I'd rather say so here than have you find out after paying. What you've seen on this page is a working prototype, not mockups. The full version is 30 days out. You're buying at the founding price because you're getting in before it opens, not after.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Do I need to be a writer already?</summary>
+        <div class="faq-item__body">
+          <p>No. Most people using it have never finished a book. You need to know what the book is about. The tool handles the part where you don't know how to start.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Will the chapters actually sound like me?</summary>
+        <div class="faq-item__body">
+          <p>That depends on what you feed it. Upload a few thousand words of your own writing and the difference is obvious. Skip that step and you'll get competent, generic prose, same as any other AI tool.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Is fiction supported, or only nonfiction?</summary>
+        <div class="faq-item__body">
+          <p>Both. The character builder and series support are built for fiction. References and citations are built for nonfiction guides and research-backed books.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>What are credits and do they run out?</summary>
+        <div class="faq-item__body">
+          <p>Credits are used when you generate text or illustrations. They reset every month at the amount shown for your tier and you're never billed again for them.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Is this a subscription?</summary>
+        <div class="faq-item__body">
+          <p>No. You pay once and keep access, including future updates to your plan.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>What happens after the launch price ends?</summary>
+        <div class="faq-item__body">
+          <p>AIWriteBook moves to monthly pricing. If you buy during the launch you never pay it, and you keep every feature we add to your tier afterwards.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Will Amazon reject an AI-assisted book?</summary>
+        <div class="faq-item__body">
+          <p>No. Amazon requires you to disclose AI-generated content when you publish, which takes one dropdown on the KDP upload form. It does not affect whether your book is accepted or how it ranks.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>What if it doesn't work for me?</summary>
+        <div class="faq-item__body">
+          <p>Ask for a refund within 7 days and you get the full amount back. You don't need to give a reason.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary>Who is this not for?</summary>
+        <div class="faq-item__body">
+          <p>If you want to write every sentence yourself and enjoy that process, this will get in your way. And if you're looking for a tool that publishes a book without you reading it, please don't buy this one.</p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================================
+     CLOSING CTA
+     ====================================================================== -->
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="final-cta">
+      <h2>Go from idea you keep explaining to a book people can buy</h2>
+      <p>$79 once, lifetime access, every update we ship. Price goes to $144 when the launch ends. Access opens within 30 days. Refundable any time before then, and for 7 days after.</p>
+
+      <a class="btn btn--gold" href="#" data-plan="cta-final">Get Lifetime Access</a>
+
+      <div class="final-cta__trust">
+        <span>
+          <svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.3 10.6 12 3.6" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          7 Days Money Back Guarantee
+        </span>
+        <span>
+          <svg width="13" height="13" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 7.4 5.3 10.6 12 3.6" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          100% Secure Order
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+
+<!-- ======================================================================
+     FOOTER
+     ====================================================================== -->
+<footer class="site-footer">
+  <p class="site-footer__brand">AIWriteBook</p>
+  <p class="site-footer__legal">&copy; <span data-year>2026</span> AIWriteBook. All rights reserved.</p>
+</footer>
+
+
+<script>
+/* ==========================================================================
+   CONFIGURATION
+   --------------------------------------------------------------------------
+   1. PAYMENT_LINKS — drop your real checkout URLs in here. Every button on
+      the page carries a data-plan attribute matching one of these keys, so
+      filling in a URL is all that is needed to wire a button up. Buttons
+      whose key is left empty simply do nothing when clicked.
+
+   2. LAUNCH_ENDS — the date/time the launch countdown counts down to.
+      Use an ISO 8601 string, e.g. '2026-10-31T23:59:59Z'.
+   ========================================================================== */
+
+var PAYMENT_LINKS = {
+  tier1:        '',   // "Buy License Tier 1" — pricing table
+  tier2:        '',   // "Buy License Tier 2" — pricing table
+  tier3:        '',   // "Buy License Tier 3" — pricing table
+  tier4:        '',   // "Buy License Tier 4" — pricing table
+  hero:         '',   // "Get Lifetime Access" — hero order box
+  'cta-final':  ''    // "Get Lifetime Access" — closing blue panel
+  /* 'cta-solution' and 'cta-vs' are in-page jumps to #pricing, so they need
+     no URL. Add keys for them here if you would rather they go to checkout. */
+};
+
+var LAUNCH_ENDS = '2026-10-31T23:59:59Z';
+
+
+/* --------------------------------------------------------------------------
+   Wire payment links onto their buttons
+   -------------------------------------------------------------------------- */
+(function () {
+  Object.keys(PAYMENT_LINKS).forEach(function (key) {
+    var url = PAYMENT_LINKS[key];
+    if (!url) return;
+    document.querySelectorAll('[data-plan="' + key + '"]').forEach(function (el) {
+      el.setAttribute('href', url);
+    });
+  });
+})();
+
+
+/* --------------------------------------------------------------------------
+   Hero order box: keep the displayed price in step with the tier dropdown
+   -------------------------------------------------------------------------- */
+(function () {
+  var select = document.querySelector('[data-tier-select]');
+  var price  = document.querySelector('[data-order-price]');
+  var was    = document.querySelector('[data-order-was]');
+  if (!select || !price || !was) return;
+
+  select.addEventListener('change', function () {
+    var opt = select.options[select.selectedIndex];
+    price.textContent = opt.dataset.price;
+    was.textContent   = opt.dataset.was;
+  });
+})();
+
+
+/* --------------------------------------------------------------------------
+   Launch countdown — drives every [data-countdown] block on the page
+   -------------------------------------------------------------------------- */
+(function () {
+  var blocks = document.querySelectorAll('[data-countdown]');
+  if (!blocks.length) return;
+
+  var target = new Date(LAUNCH_ENDS).getTime();
+  if (isNaN(target)) return;
+
+  function pad(n) { return n < 10 ? '0' + n : String(n); }
+
+  function render() {
+    var diff = Math.max(0, target - Date.now());
+    var secs = Math.floor(diff / 1000);
+
+    var parts = {
+      days:    Math.floor(secs / 86400),
+      hours:   Math.floor(secs / 3600) % 24,
+      minutes: Math.floor(secs / 60) % 60,
+      seconds: secs % 60
+    };
+
+    blocks.forEach(function (block) {
+      Object.keys(parts).forEach(function (unit) {
+        var el = block.querySelector('[data-cd="' + unit + '"]');
+        if (el) el.textContent = pad(parts[unit]);
+      });
+    });
+  }
+
+  render();
+  setInterval(render, 1000);
+})();
+
+
+/* --------------------------------------------------------------------------
+   Footer year
+   -------------------------------------------------------------------------- */
+(function () {
+  var el = document.querySelector('[data-year]');
+  if (el) el.textContent = new Date().getFullYear();
+})();
+</script>
+
+</body>
+</html>
