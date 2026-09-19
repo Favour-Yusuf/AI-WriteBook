@@ -518,6 +518,19 @@ a{color:inherit}
 }
 .feature:first-of-type{margin-top:40px}
 .feature__media .ph{aspect-ratio:4/3}
+/* A real image in a feature slot keeps the placeholder's exact frame. The
+   aspect-ratio reserves the box before the image loads, so there is no layout
+   shift; object-fit:contain guarantees the whole image is visible whatever its
+   own proportions are. If an image is a 4:3 fit and you would rather it fill
+   the frame edge to edge, change contain to cover on the line below. */
+.feature__media .shot{
+  width:100%;
+  aspect-ratio:4/3;
+  object-fit:contain;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  background:var(--white);
+}
 
 /* Even rows put the screenshot on the left */
 .feature--flip .feature__body{order:2}
@@ -1244,7 +1257,10 @@ a{color:inherit}
         </ul>
       </div>
       <div class="feature__media">
-        <div class="ph">&lt;insert product image&gt;</div>
+        <img class="shot"
+             src="https://res.cloudinary.com/dcuad6p9z/image/upload/v1789813944/AI%20Write/House2_yh3zua.jpg"
+             alt="Build the book from the ground up"
+             loading="lazy" decoding="async">
       </div>
     </div>
 
