@@ -1,0 +1,20 @@
+{
+  "name": "ledgerly",
+  "version": "1.0.0",
+  "description": "Ledgerly: AI business assistant for small business owners, powered by Claude",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
+    "dompurify": "^3.4.16",
+    "marked": "^18.1.0"
+  },
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  }
+}
