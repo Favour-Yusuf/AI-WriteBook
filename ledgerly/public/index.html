@@ -276,6 +276,84 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
 .auth-switch button{background:none;border:0;color:var(--orange-600);font-weight:600;padding:0}
 .auth-loading{color:var(--muted);font-size:14px}
 
+/* ---- View switcher ------------------------------------------------------ */
+.views{display:flex;gap:4px;margin:0 12px 10px;padding:4px;background:var(--line-soft);border-radius:var(--r-pill)}
+.views button{
+  flex:1;border:0;background:none;border-radius:var(--r-pill);padding:7px 8px;font-size:13.5px;font-weight:600;color:var(--muted);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.views button.on{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm)}
+.view{flex:1;min-height:0;display:flex;flex-direction:column}
+
+/* ---- Records ------------------------------------------------------------ */
+.records{width:100%;max-width:900px;margin:0 auto;padding:28px 20px 40px}
+.rec-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.rec-head h1{font-family:var(--font-display);font-weight:600;color:var(--ink);font-size:30px;margin:0;line-height:1.1}
+.rec-head select{
+  margin-left:auto;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-pill);padding:7px 12px;font-weight:550;
+}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;box-shadow:var(--shadow-sm);min-width:0}
+.stat .k{font-size:12.5px;color:var(--muted);font-weight:600}
+.stat .v{font-size:22px;font-weight:700;color:var(--ink);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.stat .s{font-size:12.5px;color:var(--muted);margin-top:2px}
+.stat .v.neg{color:var(--danger)}
+.ask-bar{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--ink);color:var(--paper);
+  border-radius:var(--r);padding:12px 14px 12px 16px;margin:0 0 22px;
+}
+.ask-bar span{flex:1;min-width:200px;font-size:14.5px}
+.ask-bar button{border:0;border-radius:var(--r-pill);background:var(--orange);color:#fff;font-weight:600;padding:8px 14px;font-size:13.5px}
+.ask-bar button:hover{background:var(--orange-600)}
+.alerts{display:flex;flex-direction:column;gap:6px;margin:-10px 0 20px}
+.alert{font-size:13.5px;color:var(--ink);background:var(--orange-100);border-radius:var(--r-sm);padding:8px 12px}
+.tabs-row{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.tabs{display:flex;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.tab{background:none;border:0;padding:10px 4px;margin-right:12px;white-space:nowrap;flex:none;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;font-size:14.5px}
+.tab.on{color:var(--ink);border-color:var(--orange)}
+.add-btn{
+  margin-left:auto;flex:none;border:0;border-radius:var(--r-pill);background:var(--orange);color:#fff;font-weight:600;padding:7px 14px;font-size:13.5px;
+  display:flex;align-items:center;gap:6px;white-space:nowrap;
+}
+.add-btn:hover{background:var(--orange-600)}
+.rows{display:flex;flex-direction:column}
+.row{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line-soft)}
+.row .main-col{flex:1;min-width:0}
+.row .title{color:var(--ink);font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .meta{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .amt{font-weight:650;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink);text-align:right}
+.row .amt.in{color:#1B9E55}
+.row .amt small{display:block;font-weight:500;font-size:12px;color:var(--muted)}
+.pill{border:0;border-radius:var(--r-pill);padding:3px 9px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill.unpaid{background:#FBE6E2;color:#8E2716}
+.pill.unpaid:hover{background:#F6D3CC}
+.pill.low{background:var(--orange-100);color:var(--orange-600)}
+.row .icon-btn{color:var(--muted);padding:6px}
+.row .icon-btn:hover{color:var(--ink)}
+.row .icon-btn.del:hover{color:var(--danger)}
+.badge{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.badge.sale{background:#1B9E55}.badge.expense{background:var(--danger)}
+.empty{padding:28px 8px;text-align:center;color:var(--muted);font-size:14.5px}
+.empty b{color:var(--ink)}
+.rec-error{color:var(--danger);padding:16px 4px}
+
+/* Record dialog */
+.seg{display:flex;gap:4px;padding:4px;background:var(--line-soft);border-radius:var(--r-pill)}
+.seg label{flex:1;text-align:center;border-radius:var(--r-pill);padding:6px;cursor:pointer;font-weight:600;font-size:13.5px;color:var(--muted)}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm)}
+.dlg-error{grid-column:1/-1;background:#FBE6E2;color:#8E2716;border-radius:var(--r-sm);padding:8px 12px;font-size:13.5px}
+
+/* Things Ledgerly saved during a reply */
+.actions-done{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.done-chip{font-size:12.5px;background:#E3F4EA;color:#14653A;border-radius:var(--r-pill);padding:4px 10px}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .done-chip{background:#183A27;color:#9FE0B8}
+  :root:not([data-theme="light"]) .pill.unpaid,:root:not([data-theme="light"]) .dlg-error{background:#4A1F17;color:#FFC2B6}
+}
+:root[data-theme="dark"] .done-chip{background:#183A27;color:#9FE0B8}
+:root[data-theme="dark"] .pill.unpaid,:root[data-theme="dark"] .dlg-error{background:#4A1F17;color:#FFC2B6}
+
 /* ---- Small screens ------------------------------------------------------ */
 @media (max-width: 860px){
   .topbar{display:flex}
@@ -289,6 +367,15 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
   .composer-wrap{padding-left:16px;padding-right:16px}
   .dlg-body{grid-template-columns:1fr}
   .chat-item .del{opacity:1}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stat .v{font-size:19px}
+  .tab{margin-right:6px;font-size:14px}
+  .add-btn{padding:8px 10px}
+  .add-btn span{display:none}
+  .row{gap:8px}
+  .row .meta{white-space:normal}
+  .records{padding:20px 16px 32px}
+  .rec-head h1{font-size:26px}
 }
 </style>
 </head>
@@ -343,6 +430,16 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
         <div class="brand-sub">AI assistant for small businesses</div>
       </div>
     </div>
+    <div class="views" role="tablist" aria-label="Sections">
+      <button type="button" id="viewChat" class="on" role="tab">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+        Ask
+      </button>
+      <button type="button" id="viewRecords" role="tab">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h12l4 4v12H4zM8 10h8M8 14h8M8 18h5"/></svg>
+        Records
+      </button>
+    </div>
     <button class="new-chat" id="newChat">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       New chat
@@ -379,6 +476,7 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
       <div class="topbar-title" id="topTitle">Ledgerly</div>
     </div>
 
+    <section class="view" id="chatView">
     <div class="scroll" id="scroll">
       <div class="thread" id="thread"></div>
     </div>
@@ -397,8 +495,59 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
       </form>
       <div class="disclaimer">AI can make mistakes. Check figures, and confirm legal or tax matters with a professional.</div>
     </div>
+    </section>
+
+    <section class="view scroll" id="recordsView" hidden>
+      <div class="records">
+        <div class="rec-head">
+          <h1>Records</h1>
+          <select id="period" aria-label="Period">
+            <option value="month">This month</option>
+            <option value="lastmonth">Last month</option>
+            <option value="year">This year</option>
+            <option value="all">All time</option>
+          </select>
+        </div>
+        <div class="stats" id="stats"></div>
+        <div class="alerts" id="alerts"></div>
+        <div class="ask-bar">
+          <span>Ledgerly can read these records. Ask it anything about your sales, profit, customers or stock.</span>
+          <button type="button" id="askNumbers">Ask about my numbers</button>
+        </div>
+        <div class="tabs-row">
+          <div class="tabs" role="tablist">
+            <button type="button" class="tab on" data-tab="entries">Sales &amp; expenses</button>
+            <button type="button" class="tab" data-tab="products">Products</button>
+            <button type="button" class="tab" data-tab="customers">Customers</button>
+          </div>
+          <button type="button" class="add-btn" id="addRecord" aria-label="Add">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            <span id="addLabel">Add entry</span>
+          </button>
+        </div>
+        <div class="rows" id="rows"></div>
+      </div>
+    </section>
   </main>
 </div>
+
+<dialog id="recDlg">
+  <form method="dialog" id="recForm" novalidate>
+    <div class="dlg-head"><h2 id="recTitle">Add entry</h2></div>
+    <div class="dlg-body" id="recBody"></div>
+    <div class="dlg-foot">
+      <button type="button" class="btn" id="recCancel">Cancel</button>
+      <button type="submit" class="btn primary" id="recSave">Save</button>
+    </div>
+  </form>
+</dialog>
+<datalist id="dlCustomers"></datalist>
+<datalist id="dlProducts"></datalist>
+<datalist id="dlCategories">
+  <option>Stock / Ingredients</option><option>Rent</option><option>Salaries</option><option>Transport &amp; delivery</option>
+  <option>Fuel &amp; power</option><option>Marketing</option><option>Packaging</option><option>Equipment</option>
+  <option>Phone &amp; internet</option><option>Bank charges</option><option>Taxes &amp; levies</option><option>Other</option>
+</datalist>
 
 <dialog id="profileDlg">
   <form method="dialog" id="profileForm">
@@ -448,6 +597,12 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
   // ---- Quick tools --------------------------------------------------------
   // Each fills the composer with a starter prompt; [brackets] are for the owner to fill in.
   const TOOLS = [
+    { icon: "💰", title: "How's business?", desc: "Sales, profit and what to focus on, from your records.",
+      prompt: "How is my business doing this month compared with last month? What should I focus on next?" },
+    { icon: "🧮", title: "Who owes me?", desc: "Unpaid sales, and a reminder for the biggest one.",
+      prompt: "Who owes me money right now, and how much? Draft a polite reminder for the biggest one." },
+    { icon: "✍️", title: "Record a sale or expense", desc: "Just say it; Ledgerly saves it to your records.",
+      prompt: "Record this: I sold [what] to [customer] for [amount]. They [paid / will pay on date]." },
     { icon: "📣", title: "Social media post", desc: "Captions for Instagram, WhatsApp status, Facebook or TikTok.",
       prompt: "Write 3 social media captions to promote [product or offer]. Post is for [Instagram / WhatsApp status / Facebook / TikTok]. Include a clear call to action and a few relevant hashtags." },
     { icon: "💬", title: "Reply to a customer", desc: "Complaints, enquiries, haggling and reviews.",
@@ -535,7 +690,7 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
       row.className = "chat-item" + (chat.id === state.activeId ? " active" : "");
       const open = document.createElement("button");
       open.className = "open"; open.textContent = chat.title || "New chat";
-      open.onclick = () => { state.activeId = chat.id; save(); closeNav(); renderAll(); };
+      open.onclick = () => { state.activeId = chat.id; save(); renderAll(); setView("chat"); };
       const del = document.createElement("button");
       del.className = "del"; del.setAttribute("aria-label", "Delete conversation");
       del.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
@@ -552,7 +707,7 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
     const filled = Object.values(state.profile || {}).some((v) => v && String(v).trim());
     $("profileStatus").textContent = filled ? "Saved" : "Not set";
     $("profileStatus").classList.toggle("set", filled);
-    $("topTitle").textContent = activeChat()?.title || "Ledgerly";
+    $("topTitle").textContent = view === "records" ? "Records" : activeChat()?.title || "Ledgerly";
   }
 
   function renderThread() {
@@ -569,8 +724,8 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
     const wrap = document.createElement("section");
     wrap.className = "welcome";
     wrap.innerHTML = `
-      <h1>${name ? `How can I help ${escapeHtml(name)} today?` : "Your business assistant, on call."}</h1>
-      <p class="lead">Write posts, answer customers, price your products, chase payments and plan your next move. Pick a task below or just ask.</p>
+      <h1>${name ? `How can I help ${escapeHtml(name)} today?` : "Ask Ledgerly anything about your business."}</h1>
+      <p class="lead">Your sales, profit, customers and stock, or marketing, pricing and growth. Ledgerly reads your records to answer, and you can tell it about new sales and expenses to save them.</p>
       ${filled ? "" : `<div class="profile-nudge"><span>Tell me about your business once and every answer fits it.</span><button type="button" id="nudgeBtn">Set up profile</button></div>`}
       <div class="tools"></div>`;
     const grid = wrap.querySelector(".tools");
@@ -596,6 +751,7 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
     } else {
       el.innerHTML = `<div class="who"><span class="dot" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13"/></svg></span>Ledgerly</div><div class="md"></div>`;
       el.querySelector(".md").innerHTML = renderMarkdown(m.content);
+      if (m.actions?.length) appendDone(el, m.actions);
       if (m.error) appendNotice(el, m.error, true);
       if (m.content) addActions(el, m);
     }
@@ -614,6 +770,22 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
     };
     row.appendChild(copy);
     el.appendChild(row);
+  }
+
+  function appendDone(el, actions) {
+    let box = el.querySelector(".actions-done");
+    if (!box) {
+      box = document.createElement("div");
+      box.className = "actions-done";
+      el.querySelector(".md").after(box);
+    }
+    box.innerHTML = "";
+    for (const a of actions) {
+      const chip = document.createElement("span");
+      chip.className = "done-chip";
+      chip.textContent = "✓ " + a;
+      box.appendChild(chip);
+    }
   }
 
   function appendNotice(el, text, isError) {
@@ -683,7 +855,7 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
     if (thread.querySelector(".welcome")) thread.innerHTML = "";
     thread.appendChild(messageEl({ role: "user", content: text }));
 
-    const reply = { role: "assistant", content: "" };
+    const reply = { role: "assistant", content: "", actions: [] };
     const el = document.createElement("div");
     el.className = "msg assistant";
     el.innerHTML = `<div class="who"><span class="dot" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13"/></svg></span>Ledgerly</div><div class="md"></div><div class="status"><span class="typing"><i></i><i></i><i></i></span><span class="status-text">Thinking…</span></div>`;
@@ -704,7 +876,7 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: history, profile: state.profile, webSearch: webSearch.checked }),
+        body: JSON.stringify({ messages: history, webSearch: webSearch.checked }),
         signal: controller.signal,
       });
       if (res.status === 401) {
@@ -735,6 +907,10 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
             if (!frame) frame = requestAnimationFrame(paint);
           } else if (ev.type === "status") {
             status.querySelector(".status-text").textContent = ev.text;
+          } else if (ev.type === "action") {
+            reply.actions.push(ev.text);
+            appendDone(el, reply.actions);
+            recordsStale = true;
           } else if (ev.type === "notice") {
             reply.error = ev.text;
           } else if (ev.type === "error") {
@@ -760,15 +936,387 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
       if (reply.content) addActions(el, reply);
       // Keep the chat only if it still exists (it may have been deleted mid-reply).
       if (state.chats.includes(chat)) {
-        if (reply.content) chat.messages.push({ role: "assistant", content: reply.content, ...(reply.error ? { error: reply.error } : {}) });
-        else chat.messages.pop(); // nothing came back; let the owner resend
-        if (!reply.content) { input.value = input.value || text; autoGrow(); }
+        if (reply.content || reply.actions.length) {
+          chat.messages.push({
+            role: "assistant",
+            content: reply.content || "Done.",
+            ...(reply.actions.length ? { actions: reply.actions } : {}),
+            ...(reply.error ? { error: reply.error } : {}),
+          });
+        } else {
+          chat.messages.pop(); // nothing came back; let the owner resend
+          input.value = input.value || text; autoGrow();
+        }
         save();
       }
       updateSend();
       scrollToBottom();
     }
   }
+
+  // ---- Views ----------------------------------------------------------------
+  let view = "chat";
+  let recordsStale = true;
+  function setView(v) {
+    view = v;
+    $("chatView").hidden = v !== "chat";
+    $("recordsView").hidden = v !== "records";
+    $("viewChat").classList.toggle("on", v === "chat");
+    $("viewRecords").classList.toggle("on", v === "records");
+    $("newChat").hidden = v !== "chat";
+    closeNav();
+    if (v === "records") loadRecords();
+    else { renderSidebar(); input.focus(); }
+    $("topTitle").textContent = v === "records" ? "Records" : activeChat()?.title || "Ledgerly";
+  }
+  $("viewChat").onclick = () => setView("chat");
+  $("viewRecords").onclick = () => setView("records");
+
+  // ---- Records --------------------------------------------------------------
+  let records = null;
+  let recTab = "entries";
+
+  function fmtMoney(n) {
+    if (n == null) return "—";
+    const code = /^([A-Z]{3})\b/.exec(state.profile?.currency || "")?.[1];
+    try {
+      if (code) return new Intl.NumberFormat(undefined, { style: "currency", currency: code, currencyDisplay: "narrowSymbol", minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(n);
+    } catch {}
+    return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  }
+  function fmtDate(d) {
+    if (!d) return "";
+    const date = new Date(d + "T00:00:00");
+    return date.toLocaleDateString(undefined, { day: "numeric", month: "short", year: date.getFullYear() === new Date().getFullYear() ? undefined : "numeric" });
+  }
+  function periodRange(p, todayStr) {
+    const [y, m] = todayStr.split("-").map(Number);
+    const pad = (n) => String(n).padStart(2, "0");
+    const lastDay = (yy, mm) => new Date(yy, mm, 0).getDate();
+    if (p === "month") return { from: `${y}-${pad(m)}-01`, to: `${y}-${pad(m)}-${lastDay(y, m)}` };
+    if (p === "lastmonth") {
+      const ly = m === 1 ? y - 1 : y, lm = m === 1 ? 12 : m - 1;
+      return { from: `${ly}-${pad(lm)}-01`, to: `${ly}-${pad(lm)}-${lastDay(ly, lm)}` };
+    }
+    if (p === "year") return { from: `${y}-01-01`, to: `${y}-12-31` };
+    return {};
+  }
+
+  async function api(method, url, body) {
+    const res = await fetch(url, {
+      method,
+      headers: body ? { "Content-Type": "application/json" } : {},
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    if (res.status === 401) { showAuth("login", "Your session has ended. Please log in again."); throw new Error("Please log in again."); }
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(out.error || `Something went wrong (${res.status}).`);
+    return out;
+  }
+
+  async function loadRecords() {
+    const period = $("period").value;
+    const todayStr = records?.today || new Date().toLocaleDateString("en-CA");
+    const { from, to } = periodRange(period, todayStr);
+    const qs = new URLSearchParams();
+    if (from) qs.set("from", from);
+    if (to) qs.set("to", to);
+    if (!records) $("rows").innerHTML = '<div class="empty">Loading…</div>';
+    try {
+      records = await api("GET", "/api/ledger?" + qs);
+      recordsStale = false;
+      renderRecords();
+    } catch (err) {
+      $("rows").innerHTML = "";
+      const e = document.createElement("div");
+      e.className = "rec-error"; e.textContent = err.message;
+      $("rows").appendChild(e);
+    }
+  }
+  $("period").onchange = loadRecords;
+
+  function renderRecords() {
+    const s = records.summary;
+    const periodName = $("period").selectedOptions[0].textContent.toLowerCase();
+    const stats = [
+      ["Sales", fmtMoney(s.sales), `${s.salesCount} sale${s.salesCount === 1 ? "" : "s"} ${periodName}`],
+      ["Expenses", fmtMoney(s.expenses), periodName],
+      ["Profit", fmtMoney(s.profit), s.profitMargin == null ? periodName : `${s.profitMargin}% margin`, s.profit < 0],
+      ["Owed to you", fmtMoney(s.owedToYou), s.youOwe ? `You owe ${fmtMoney(s.youOwe)}` : "unpaid sales, all time"],
+    ];
+    $("stats").innerHTML = "";
+    for (const [k, v, sub, neg] of stats) {
+      const card = document.createElement("div");
+      card.className = "stat";
+      card.innerHTML = `<div class="k"></div><div class="v${neg ? " neg" : ""}"></div><div class="s"></div>`;
+      card.querySelector(".k").textContent = k;
+      card.querySelector(".v").textContent = v;
+      card.querySelector(".s").textContent = sub;
+      $("stats").appendChild(card);
+    }
+    $("alerts").innerHTML = "";
+    for (const p of s.lowStock) {
+      const a = document.createElement("div");
+      a.className = "alert";
+      a.textContent = `Low stock: ${p.name} has ${p.stock} left.`;
+      $("alerts").appendChild(a);
+    }
+    $("dlCustomers").innerHTML = records.customers.map((c) => `<option value="${escapeHtml(c.name)}">`).join("");
+    $("dlProducts").innerHTML = records.products.map((p) => `<option value="${escapeHtml(p.name)}">`).join("");
+    renderRows();
+  }
+
+  const ICON_EDIT = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16zM14 6l4 4"/></svg>';
+  const ICON_DEL = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>';
+
+  function rowEl({ title, meta, amount, amountClass, amountSub, pill, onEdit, onDelete }) {
+    const row = document.createElement("div");
+    row.className = "row";
+    const main = document.createElement("div");
+    main.className = "main-col";
+    main.innerHTML = '<div class="title"></div><div class="meta"></div>';
+    if (title instanceof Node) main.firstChild.appendChild(title); else main.firstChild.textContent = title;
+    main.lastChild.textContent = meta;
+    row.appendChild(main);
+    if (pill) row.appendChild(pill);
+    if (amount != null) {
+      const a = document.createElement("div");
+      a.className = "amt " + (amountClass || "");
+      a.textContent = amount;
+      if (amountSub) { const sm = document.createElement("small"); sm.textContent = amountSub; a.appendChild(sm); }
+      row.appendChild(a);
+    }
+    for (const [fn, icon, cls, label] of [[onEdit, ICON_EDIT, "", "Edit"], [onDelete, ICON_DEL, " del", "Delete"]]) {
+      if (!fn) continue;
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "icon-btn" + cls; b.innerHTML = icon; b.setAttribute("aria-label", label);
+      b.onclick = fn;
+      row.appendChild(b);
+    }
+    return row;
+  }
+
+  function emptyEl(html) {
+    const e = document.createElement("div");
+    e.className = "empty"; e.innerHTML = html;
+    return e;
+  }
+
+  function renderRows() {
+    const rows = $("rows");
+    rows.innerHTML = "";
+    $("addLabel").textContent = { entries: "Add entry", products: "Add product", customers: "Add customer" }[recTab];
+    document.querySelectorAll(".tab").forEach((t) => t.classList.toggle("on", t.dataset.tab === recTab));
+
+    if (recTab === "entries") {
+      if (!records.entries.length) {
+        rows.appendChild(emptyEl(`No sales or expenses ${escapeHtml($("period").selectedOptions[0].textContent.toLowerCase())}.<br>Tap <b>Add entry</b>, or tell Ledgerly in the chat: <b>“I sold 3 trays to Tolu for ₦45,000, she'll pay Friday.”</b>`));
+        return;
+      }
+      for (const e of records.entries) {
+        const title = document.createElement("span");
+        title.innerHTML = `<span class="badge ${e.type}"></span>`;
+        title.append(e.description || e.product || e.category || (e.type === "sale" ? "Sale" : "Expense"));
+        const meta = [fmtDate(e.date), e.customer, e.quantity ? `${e.quantity} × ${e.product}` : "", e.type === "expense" ? e.category : ""].filter(Boolean).join(" · ");
+        let pill = null;
+        if (e.status === "unpaid") {
+          pill = document.createElement("button");
+          pill.type = "button"; pill.className = "pill unpaid";
+          pill.textContent = e.dueDate ? `Unpaid · due ${fmtDate(e.dueDate)}` : "Unpaid";
+          pill.title = "Mark as paid";
+          pill.onclick = () => mutate("PATCH", `/api/ledger/entries/${e.id}`, { status: "paid" });
+        }
+        rows.appendChild(rowEl({
+          title, meta, pill,
+          amount: (e.type === "sale" ? "+" : "−") + fmtMoney(e.amount),
+          amountClass: e.type === "sale" ? "in" : "",
+          onEdit: () => openRecord("entries", e),
+          onDelete: () => confirm("Delete this entry?") && mutate("DELETE", `/api/ledger/entries/${e.id}`),
+        }));
+      }
+    } else if (recTab === "products") {
+      if (!records.products.length) {
+        rows.appendChild(emptyEl("No products yet. Add what you sell, with its price and cost, so Ledgerly can work out your margins and track stock."));
+        return;
+      }
+      for (const p of [...records.products].sort((a, b) => a.name.localeCompare(b.name))) {
+        const margin = p.price && p.cost ? ` · Margin ${fmtMoney(p.price - p.cost)}` : "";
+        let pill = null;
+        if (typeof p.stock === "number") {
+          pill = document.createElement("span");
+          pill.className = "pill" + (p.stock <= 5 ? " low" : "");
+          pill.textContent = `${p.stock} ${p.unit || "in stock"}`;
+        }
+        rows.appendChild(rowEl({
+          title: p.name,
+          meta: `Price ${fmtMoney(p.price)} · Cost ${fmtMoney(p.cost)}${margin}`,
+          pill,
+          onEdit: () => openRecord("products", p),
+          onDelete: () => confirm(`Delete ${p.name}? Past sales stay in your records.`) && mutate("DELETE", `/api/ledger/products/${p.id}`),
+        }));
+      }
+    } else {
+      if (!records.customers.length) {
+        rows.appendChild(emptyEl("No customers yet. They're added automatically when you record a sale with a customer's name."));
+        return;
+      }
+      for (const c of [...records.customers].sort((a, b) => b.owes - a.owes || b.totalBought - a.totalBought)) {
+        const meta = [c.phone, `${c.purchases} purchase${c.purchases === 1 ? "" : "s"}`, c.lastPurchase ? `last ${fmtDate(c.lastPurchase)}` : ""].filter(Boolean).join(" · ");
+        let pill = null;
+        if (c.owes > 0) {
+          pill = document.createElement("span");
+          pill.className = "pill unpaid";
+          pill.textContent = `Owes ${fmtMoney(c.owes)}`;
+        }
+        rows.appendChild(rowEl({
+          title: c.name, meta, pill,
+          amount: fmtMoney(c.totalBought), amountSub: "bought",
+          onEdit: () => openRecord("customers", c),
+          onDelete: () => confirm(`Delete ${c.name}? Past sales stay in your records.`) && mutate("DELETE", `/api/ledger/customers/${c.id}`),
+        }));
+      }
+    }
+  }
+  document.querySelectorAll(".tab").forEach((t) => (t.onclick = () => { recTab = t.dataset.tab; renderRows(); }));
+
+  async function mutate(method, url, body) {
+    try {
+      await api(method, url, body);
+      await loadRecords();
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  // Record add/edit dialog
+  const FORMS = {
+    entries: [
+      { name: "type", type: "seg", options: [["sale", "Sale"], ["expense", "Expense"]], full: true },
+      { name: "amount", label: "Amount", type: "number", hint: "Leave empty to use the product's price × quantity" },
+      { name: "date", label: "Date", type: "date" },
+      { name: "description", label: "Description", full: true, placeholder: "e.g. Birthday order, 2 trays" },
+      { name: "customer", label: "Customer", list: "dlCustomers", only: "sale" },
+      { name: "product", label: "Product", list: "dlProducts", only: "sale" },
+      { name: "quantity", label: "Quantity", type: "number", only: "sale" },
+      { name: "category", label: "Category", list: "dlCategories", only: "expense" },
+      { name: "status", label: "Payment", type: "select", options: [["paid", "Paid"], ["unpaid", "Not paid yet"]] },
+      { name: "dueDate", label: "Due date", type: "date", showIf: (f) => f.status.value === "unpaid" },
+    ],
+    products: [
+      { name: "name", label: "Name", full: true, placeholder: "e.g. Party jollof tray" },
+      { name: "price", label: "Selling price", type: "number" },
+      { name: "cost", label: "Cost per unit", type: "number" },
+      { name: "stock", label: "In stock", type: "number", hint: "Leave empty for services" },
+      { name: "unit", label: "Unit", placeholder: "e.g. tray, kg, pcs" },
+    ],
+    customers: [
+      { name: "name", label: "Name", full: true },
+      { name: "phone", label: "Phone", type: "tel" },
+      { name: "notes", label: "Notes", type: "textarea", full: true, placeholder: "e.g. Prefers delivery after 5pm" },
+    ],
+  };
+  let editing = null; // { kind, item }
+
+  function openRecord(kind, item) {
+    editing = { kind, item };
+    const singular = { entries: "entry", products: "product", customers: "customer" }[kind];
+    $("recTitle").textContent = (item ? "Edit " : "Add ") + singular;
+    const body = $("recBody");
+    body.innerHTML = "";
+    for (const f of FORMS[kind]) {
+      const wrap = document.createElement("div");
+      wrap.className = "field" + (f.full ? " full" : "");
+      wrap.dataset.only = f.only || "";
+      wrap.dataset.name = f.name;
+      const value = item?.[f.name] ?? (f.name === "date" ? records?.today || new Date().toLocaleDateString("en-CA") : f.name === "type" ? "sale" : f.name === "status" ? "paid" : "");
+      if (f.type === "seg") {
+        const seg = document.createElement("div");
+        seg.className = "seg";
+        for (const [v, l] of f.options) {
+          const lab = document.createElement("label");
+          lab.innerHTML = `<input type="radio" name="${f.name}" value="${v}">`;
+          lab.append(l);
+          lab.firstChild.checked = value === v;
+          seg.appendChild(lab);
+        }
+        wrap.appendChild(seg);
+      } else {
+        const id = "r-" + f.name;
+        const label = document.createElement("label");
+        label.htmlFor = id; label.textContent = f.label;
+        let el;
+        if (f.type === "select") {
+          el = document.createElement("select");
+          for (const [v, l] of f.options) el.add(new Option(l, v));
+        } else if (f.type === "textarea") {
+          el = document.createElement("textarea");
+        } else {
+          el = document.createElement("input");
+          el.type = f.type || "text";
+          if (f.type === "number") { el.inputMode = "decimal"; el.step = "any"; el.min = f.name === "stock" ? "" : "0"; }
+          if (f.list) el.setAttribute("list", f.list);
+        }
+        el.id = id; el.name = f.name;
+        if (f.placeholder) el.placeholder = f.placeholder;
+        el.value = value ?? "";
+        wrap.append(label, el);
+        if (f.hint) { const h = document.createElement("span"); h.className = "hint"; h.style.cssText = "font-size:12px;color:var(--muted)"; h.textContent = f.hint; wrap.appendChild(h); }
+      }
+      body.appendChild(wrap);
+    }
+    syncRecordForm();
+    $("recForm").oninput = syncRecordForm;
+    $("recDlg").showModal();
+  }
+
+  function syncRecordForm() {
+    const form = $("recForm");
+    const type = form.elements.type?.value;
+    for (const wrap of $("recBody").children) {
+      const f = FORMS[editing.kind].find((x) => x.name === wrap.dataset.name);
+      if (!f) continue;
+      wrap.hidden = (f.only && f.only !== type) || (f.showIf && !f.showIf(form.elements));
+    }
+  }
+
+  $("recCancel").onclick = () => $("recDlg").close();
+  $("recForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const { kind, item } = editing;
+    const form = $("recForm");
+    const data = {};
+    // Hidden and empty fields are left out, so editing never blanks a saved value.
+    for (const f of FORMS[kind]) {
+      if ($("recBody").querySelector(`[data-name="${f.name}"]`).hidden) continue;
+      const raw = form.elements[f.name].value.trim();
+      if (raw !== "") data[f.name] = f.type === "number" ? Number(raw) : raw;
+    }
+    const btn = $("recSave");
+    btn.disabled = true;
+    $("recBody").querySelector(".dlg-error")?.remove();
+    try {
+      if (item) await api("PATCH", `/api/ledger/${kind}/${item.id}`, data);
+      else await api("POST", `/api/ledger/${kind}`, data);
+      $("recDlg").close();
+      await loadRecords();
+    } catch (err) {
+      const msg = document.createElement("div");
+      msg.className = "dlg-error"; msg.textContent = err.message;
+      $("recBody").prepend(msg);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+  $("addRecord").onclick = () => openRecord(recTab, null);
+
+  $("askNumbers").onclick = () => {
+    const period = $("period").selectedOptions[0].textContent.toLowerCase();
+    state.activeId = null; save();
+    setView("chat");
+    renderAll();
+    input.value = `Look at my records for ${period}. How is the business doing, what stands out, and what should I do next?`;
+    autoGrow(); updateSend(); input.focus();
+  };
 
   // ---- Profile dialog -----------------------------------------------------
   const dlg = $("profileDlg"), form = $("profileForm");
@@ -781,6 +1329,8 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
     const p = {};
     for (const el of form.elements) if (el.name) p[el.name] = el.value.trim();
     state.profile = p; save(); renderAll();
+    api("PUT", "/api/profile", p).catch((err) => alert("Couldn't save your profile: " + err.message));
+    if (view === "records" && records) renderRecords();
   });
   $("cancelProfile").onclick = () => dlg.close();
   $("clearProfile").onclick = () => { for (const el of form.elements) if (el.name) el.value = ""; };
@@ -887,8 +1437,10 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
     $("userEmail").textContent = u.email;
     authView.hidden = true;
     app.hidden = false;
+    records = null;
     renderAll();
-    input.focus();
+    setView("chat");
+    syncProfile();
   }
 
   $("logoutBtn").onclick = async () => {
@@ -897,6 +1449,19 @@ dialog::backdrop{background:rgba(22,19,15,.45)}
     closeNav();
     showAuth("login", "You've logged out.");
   };
+
+  // The profile is kept on the server so it follows the account to every
+  // device. A profile saved only in this browser (from before) is uploaded.
+  async function syncProfile() {
+    try {
+      const { profile } = await api("GET", "/api/profile");
+      const hasValues = (p) => p && Object.values(p).some((v) => v && String(v).trim());
+      if (hasValues(profile)) state.profile = profile;
+      else if (hasValues(state.profile)) await api("PUT", "/api/profile", state.profile);
+      save(); renderAll();
+      if (view === "records" && records) renderRecords();
+    } catch {}
+  }
 
   async function boot() {
     applyTheme();

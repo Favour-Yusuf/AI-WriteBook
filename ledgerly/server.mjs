@@ -1,5 +1,7 @@
-// Ledgerly, an AI business assistant: a small Node server that serves the chat UI in
-// ./public and streams Claude's replies to it over Server-Sent Events.
+// Ledgerly, an AI business assistant: a small Node server that serves the UI in
+// ./public, keeps each owner's business records (ledger.mjs), and streams
+// Claude's replies over Server-Sent Events. The AI can read and add to the
+// records through the tools in tools.mjs.
 //
 // Run:  ANTHROPIC_API_KEY=sk-ant-... npm start   (then open http://localhost:3000)
 // Everyone must sign in before chatting; see auth.mjs and the README for the
@@ -11,6 +13,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Anthropic from "@anthropic-ai/sdk";
 import { createAuth } from "./auth.mjs";
+import { createLedger, LedgerError, today } from "./ledger.mjs";
+import { ledgerTools, runLedgerTool } from "./tools.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = path.join(here, "public");
@@ -19,19 +23,23 @@ const MODEL = process.env.ASSISTANT_MODEL || "claude-opus-5-5";
 
 const MAX_BODY_BYTES = 200_000;
 const MAX_HISTORY_MESSAGES = 40;
-const MAX_PAUSE_CONTINUATIONS = 3;
+const MAX_MODEL_CALLS = 12; // per reply: tool calls and web-search pauses each need another call
+const MAX_BAD_JSON_RETRIES = 2;
+const DATA_DIR = process.env.DATA_DIR || path.join(here, "data");
 
 const client = new Anthropic();
 
 const auth = createAuth({
-  dataDir: process.env.DATA_DIR || path.join(here, "data"),
+  dataDir: DATA_DIR,
   signupMode: process.env.SIGNUP === "closed" ? "closed" : "open",
   signupCode: process.env.SIGNUP_CODE || "",
   secureCookies: process.env.COOKIE_SECURE || "auto",
 });
+const ledger = createLedger({ dataDir: DATA_DIR });
 
 // Stable instructions come first so they can be cached across requests.
-// Per-owner details (the business profile) go in a second block after it.
+// Per-request details (today's date, the business profile) go in a second
+// block after it.
 const SYSTEM_PROMPT = `You are Ledgerly, a practical business assistant for owners of small businesses: shops, salons, restaurants, online sellers, freelancers, tutors, caterers, repair services, and similar. Many of them run the business alone or with a few staff, have little time, and no specialist to ask.
 
 How you help:
@@ -41,9 +49,23 @@ How you help:
 - Use the business profile below when it is filled in: their industry, location, currency, customers and tone. Price things in their currency. If a missing detail would change your answer a lot, ask one short question; otherwise make a sensible assumption, say what it is, and carry on.
 - Match the owner's language. If they write in Pidgin, Yoruba, Hausa, Igbo, French or any other language, reply in it.
 - Be honest about limits. For legal, tax, and regulatory questions give useful general guidance, then say clearly when they should confirm with an accountant, lawyer, or the relevant government agency in their country. Never invent laws, rates, or statistics. When you need current facts (prices, regulations, trends, competitors), use web search and mention where the information came from.
-- Keep answers tight. Use headings and bullet points only when they make the answer easier to scan. No filler, no pep talk.`;
+- Keep answers tight. Use headings and bullet points only when they make the answer easier to scan. No filler, no pep talk.
 
-function profileBlock(profile) {
+The owner's records:
+- Ledgerly keeps the owner's records: sales, expenses, products (price, cost, stock) and customers (including who owes money). You can read them with your tools. Whenever a question touches their own business (how much they made, profit, best sellers, slow months, who owes them, what they spend most on, stock, a particular customer), look it up with the tools before answering. Quote the exact figures the tools return and name the period they cover. Don't do your own arithmetic on totals the tools already give you.
+- If the records are empty or don't cover what was asked, say so plainly, answer as well as you can from what the owner has told you, and suggest what to start recording.
+- Go beyond reading numbers back: point out what stands out (a product with a thin margin, expenses growing faster than sales, a customer with a large unpaid balance, stock about to run out) and suggest the next step.
+- When the owner tells you about a sale, expense, payment, new product or customer, record it with the tools, then confirm in one line what you saved. If a detail you need is missing (for example the amount), ask before saving. Don't record hypothetical examples, and never invent entries.
+- Amounts in the records are in the owner's currency. Interpret "this month", "last week" and similar relative to today's date given below.`;
+
+function contextBlock(profile) {
+  const date = new Date();
+  const header = `Today is ${date.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} (${today()}).`;
+  const details = profileLines(profile);
+  return details ? `${header}\n\n${details}` : header;
+}
+
+function profileLines(profile) {
   if (!profile || typeof profile !== "object") return null;
   const fields = [
     ["Business name", profile.name],
@@ -84,11 +106,13 @@ async function handleChat(req, res) {
   const messages = cleanHistory(body.messages);
   if (!messages) return sendJson(res, 400, { error: "Send at least one message." });
 
-  const system = [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }];
-  const profile = profileBlock(body.profile);
-  if (profile) system.push({ type: "text", text: profile });
+  const system = [
+    { type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } },
+    { type: "text", text: contextBlock((await ledger.getBook(user.id)).profile) },
+  ];
 
-  const tools = body.webSearch === false ? [] : [{ type: "web_search_20260209", name: "web_search", max_uses: 5 }];
+  const tools = [...ledgerTools];
+  if (body.webSearch !== false) tools.push({ type: "web_search_20260209", name: "web_search", max_uses: 5 });
 
   res.writeHead(200, {
     "Content-Type": "text/event-stream; charset=utf-8",
@@ -102,7 +126,10 @@ async function handleChat(req, res) {
 
   try {
     const conversation = [...messages];
-    for (let turn = 0; turn <= MAX_PAUSE_CONTINUATIONS; turn++) {
+    let sentText = false;
+    let badJsonRetries = 0;
+
+    for (let call = 0; call < MAX_MODEL_CALLS; call++) {
       const stream = client.beta.messages.stream(
         {
           model: MODEL,
@@ -117,25 +144,60 @@ async function handleChat(req, res) {
         { signal: abort.signal },
       );
 
-      for await (const event of stream) {
-        if (event.type === "content_block_start" && event.content_block.type === "server_tool_use") {
-          send({ type: "status", text: "Searching the web…" });
-        } else if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-          send({ type: "text", text: event.delta.text });
+      // Separate text from different steps of the same reply with a blank line.
+      let newStep = sentText;
+      let message;
+      try {
+        for await (const event of stream) {
+          if (event.type === "content_block_start") {
+            const block = event.content_block;
+            if (block.type === "server_tool_use") send({ type: "status", text: "Searching the web…" });
+            else if (block.type === "tool_use") send({ type: "status", text: toolStatus(block.name) });
+          } else if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+            if (newStep) {
+              send({ type: "text", text: "\n\n" });
+              newStep = false;
+            }
+            send({ type: "text", text: event.delta.text });
+            sentText = true;
+          }
         }
+        message = await stream.finalMessage();
+        badJsonRetries = 0;
+      } catch (err) {
+        // Tool inputs are streamed unvalidated, so the SDK can fail to parse one.
+        // Retry that step; let API errors and aborts through.
+        if (err instanceof Anthropic.APIError || abort.signal.aborted || badJsonRetries++ >= MAX_BAD_JSON_RETRIES) throw err;
+        console.warn("Unparseable tool input; retrying step:", err.message);
+        continue;
       }
 
-      const message = await stream.finalMessage();
       if (message.stop_reason === "refusal") {
-        send({ type: "error", text: "The assistant couldn't help with that request. Try rephrasing it." });
+        send({ type: "error", text: "Ledgerly couldn't help with that request. Try rephrasing it." });
         break;
       }
-      if (message.stop_reason === "max_tokens") {
-        send({ type: "notice", text: "The answer was cut off because it got too long. Ask it to continue." });
-      }
       // A long web search can pause the turn; send the partial turn back to resume it.
-      if (message.stop_reason !== "pause_turn") break;
+      if (message.stop_reason === "pause_turn") {
+        conversation.push({ role: "assistant", content: message.content });
+        continue;
+      }
+
+      const toolCalls = message.content.filter((b) => b.type === "tool_use");
+      if (message.stop_reason === "max_tokens") {
+        // A tool input cut off here may look complete, so never run it.
+        send({ type: "notice", text: "The answer was cut off because it got too long. Ask Ledgerly to continue." });
+        break;
+      }
+      if (message.stop_reason !== "tool_use" || toolCalls.length === 0) break;
+
       conversation.push({ role: "assistant", content: message.content });
+      const results = [];
+      for (const toolCall of toolCalls) {
+        const out = await runLedgerTool(ledger, user.id, toolCall.name, toolCall.input);
+        if (out.action) send({ type: "action", text: out.action });
+        results.push({ type: "tool_result", tool_use_id: toolCall.id, content: out.content, ...(out.isError ? { is_error: true } : {}) });
+      }
+      conversation.push({ role: "user", content: results });
     }
     send({ type: "done" });
   } catch (err) {
@@ -145,6 +207,70 @@ async function handleChat(req, res) {
     }
   } finally {
     res.end();
+  }
+}
+
+function toolStatus(name) {
+  if (["record_entry", "update_entry", "save_product", "save_customer"].includes(name)) return "Updating your records…";
+  return "Checking your records…";
+}
+
+// ---- Records API (used by the Records page) ---------------------------------
+
+async function handleProfile(req, res) {
+  const user = await auth.currentUser(req);
+  if (!user) return sendJson(res, 401, { error: "Please log in again." });
+  if (req.method === "GET") return sendJson(res, 200, { profile: (await ledger.getBook(user.id)).profile });
+  if (req.method !== "PUT") return sendJson(res, 405, { error: "Method not allowed" });
+  const body = await readJsonBody(req, res);
+  if (!body) return;
+  try {
+    sendJson(res, 200, { profile: await ledger.saveProfile(user.id, body) });
+  } catch (err) {
+    if (err instanceof LedgerError) return sendJson(res, 400, { error: err.message });
+    throw err;
+  }
+}
+
+const LEDGER_KINDS = { entries: "entries", products: "products", customers: "customers" };
+
+async function handleLedger(req, res, url) {
+  const user = await auth.currentUser(req);
+  if (!user) return sendJson(res, 401, { error: "Please log in again." });
+
+  const [, , , kind, id] = url.pathname.split("/"); // /api/ledger/<kind>/<id>
+  try {
+    if (req.method === "GET" && !kind) {
+      const book = await ledger.getBook(user.id);
+      const from = url.searchParams.get("from") || undefined;
+      const to = url.searchParams.get("to") || undefined;
+      return sendJson(res, 200, {
+        today: today(),
+        summary: ledger.summarize(book, { from, to }),
+        entries: ledger.findEntries(book, { from, to, limit: 200 }).entries,
+        products: book.products,
+        customers: ledger.customerStats(book),
+      });
+    }
+    if (!LEDGER_KINDS[kind]) return sendJson(res, 404, { error: "Not found" });
+
+    if (req.method === "DELETE" && id) {
+      await ledger.remove(user.id, kind, id);
+      return sendJson(res, 200, { ok: true });
+    }
+    if ((req.method === "POST" && !id) || (req.method === "PATCH" && id)) {
+      const body = await readJsonBody(req, res);
+      if (!body) return;
+      let item;
+      if (kind === "entries") item = id ? await ledger.updateEntry(user.id, id, body) : await ledger.addEntry(user.id, body);
+      else if (kind === "products") item = await ledger.saveProduct(user.id, body, id);
+      else item = await ledger.saveCustomer(user.id, body, id);
+      return sendJson(res, id ? 200 : 201, { item });
+    }
+    return sendJson(res, 405, { error: "Method not allowed" });
+  } catch (err) {
+    if (err instanceof LedgerError) return sendJson(res, 400, { error: err.message });
+    throw err;
   }
 }
 
@@ -259,6 +385,9 @@ async function route(req, res) {
   if (req.method === "POST" && req.url === "/api/chat") return handleChat(req, res);
   if (req.method === "POST" && AUTH_ROUTES[req.url]) return handleAuth(req, res, AUTH_ROUTES[req.url]);
   if (req.method === "GET" && req.url === "/api/me") return handleMe(req, res);
+  const url = new URL(req.url, "http://x");
+  if (url.pathname === "/api/profile") return handleProfile(req, res);
+  if (url.pathname === "/api/ledger" || url.pathname.startsWith("/api/ledger/")) return handleLedger(req, res, url);
   if (req.method === "GET" && req.url === "/api/health") return sendJson(res, 200, { ok: true, model: MODEL });
   if (req.method === "GET") return serveStatic(req, res);
   sendJson(res, 405, { error: "Method not allowed" });
