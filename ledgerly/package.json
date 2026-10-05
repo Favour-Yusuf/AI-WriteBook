@@ -1,7 +1,7 @@
 {
-  "name": "business-assistant",
+  "name": "ledgerly",
   "version": "1.0.0",
-  "description": "AI business assistant for small business owners, powered by Claude",
+  "description": "Ledgerly: AI business assistant for small business owners, powered by Claude",
   "main": "server.mjs",
   "scripts": {
     "start": "node server.mjs"

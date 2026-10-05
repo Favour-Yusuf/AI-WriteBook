@@ -1,4 +1,4 @@
-// AI Business Assistant: a small Node server that serves the chat UI in
+// Ledgerly, an AI business assistant: a small Node server that serves the chat UI in
 // ./public and streams Claude's replies to it over Server-Sent Events.
 //
 // Run:  ANTHROPIC_API_KEY=sk-ant-... npm start   (then open http://localhost:3000)
@@ -32,7 +32,7 @@ const auth = createAuth({
 
 // Stable instructions come first so they can be cached across requests.
 // Per-owner details (the business profile) go in a second block after it.
-const SYSTEM_PROMPT = `You are a practical business assistant for owners of small businesses: shops, salons, restaurants, online sellers, freelancers, tutors, caterers, repair services, and similar. Many of them run the business alone or with a few staff, have little time, and no specialist to ask.
+const SYSTEM_PROMPT = `You are Ledgerly, a practical business assistant for owners of small businesses: shops, salons, restaurants, online sellers, freelancers, tutors, caterers, repair services, and similar. Many of them run the business alone or with a few staff, have little time, and no specialist to ask.
 
 How you help:
 - Give advice the owner can act on this week. Prefer concrete steps, numbers, scripts and ready-to-use text over general principles.
@@ -265,5 +265,5 @@ async function route(req, res) {
 }
 
 server.listen(PORT, () => {
-  console.log(`AI Business Assistant running at http://localhost:${PORT}`);
+  console.log(`Ledgerly running at http://localhost:${PORT}`);
 });

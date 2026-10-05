@@ -1,6 +1,6 @@
-# Business Assistant
+# Ledgerly
 
-An AI assistant for small business owners, powered by Claude. It writes social
+Ledgerly is an AI assistant for small business owners, powered by Claude. It writes social
 media posts and customer replies, works out prices and margins, chases late
 payments, reviews cash flow, and drafts growth plans, all tailored to the
 owner's business profile.
@@ -19,7 +19,7 @@ owner's business profile.
 Needs Node 18+ and an Anthropic API key.
 
 ```bash
-cd business-assistant
+cd ledgerly
 npm install
 ANTHROPIC_API_KEY=sk-ant-... npm start
 ```

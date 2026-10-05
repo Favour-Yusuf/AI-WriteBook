@@ -1,4 +1,4 @@
-// Accounts and sessions for the Business Assistant.
+// Accounts and sessions for Ledgerly.
 //
 // Users and sessions live in JSON files under DATA_DIR. Passwords are hashed
 // with scrypt; the browser holds only a random session token in an HttpOnly
