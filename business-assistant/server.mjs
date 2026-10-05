@@ -2,12 +2,15 @@
 // ./public and streams Claude's replies to it over Server-Sent Events.
 //
 // Run:  ANTHROPIC_API_KEY=sk-ant-... npm start   (then open http://localhost:3000)
+// Everyone must sign in before chatting; see auth.mjs and the README for the
+// sign-up settings.
 
 import http from "node:http";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Anthropic from "@anthropic-ai/sdk";
+import { createAuth } from "./auth.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = path.join(here, "public");
@@ -19,6 +22,13 @@ const MAX_HISTORY_MESSAGES = 40;
 const MAX_PAUSE_CONTINUATIONS = 3;
 
 const client = new Anthropic();
+
+const auth = createAuth({
+  dataDir: process.env.DATA_DIR || path.join(here, "data"),
+  signupMode: process.env.SIGNUP === "closed" ? "closed" : "open",
+  signupCode: process.env.SIGNUP_CODE || "",
+  secureCookies: process.env.COOKIE_SECURE || "auto",
+});
 
 // Stable instructions come first so they can be cached across requests.
 // Per-owner details (the business profile) go in a second block after it.
@@ -65,12 +75,11 @@ function cleanHistory(messages) {
 }
 
 async function handleChat(req, res) {
-  let body;
-  try {
-    body = JSON.parse(await readBody(req));
-  } catch {
-    return sendJson(res, 400, { error: "Invalid request body." });
-  }
+  const user = await auth.currentUser(req);
+  if (!user) return sendJson(res, 401, { error: "Please log in again." });
+
+  const body = await readJsonBody(req, res);
+  if (!body) return;
 
   const messages = cleanHistory(body.messages);
   if (!messages) return sendJson(res, 400, { error: "Send at least one message." });
@@ -147,6 +156,35 @@ function friendlyError(err) {
   return "Something went wrong while generating the answer.";
 }
 
+// Parses a JSON request body, or answers 400/415 itself and returns null.
+// Requiring application/json also stops other sites from posting here with
+// the user's cookie, because browsers won't send that type cross-site
+// without a CORS preflight, which this server never approves.
+async function readJsonBody(req, res) {
+  if (!(req.headers["content-type"] || "").startsWith("application/json")) {
+    sendJson(res, 415, { error: "Send JSON." });
+    return null;
+  }
+  try {
+    const body = JSON.parse(await readBody(req));
+    if (body && typeof body === "object") return body;
+  } catch {}
+  sendJson(res, 400, { error: "Invalid request body." });
+  return null;
+}
+
+async function handleAuth(req, res, action) {
+  const body = action === "logout" ? {} : await readJsonBody(req, res);
+  if (!body) return;
+  const [status, data] = await auth[action](req, res, body);
+  sendJson(res, status, data);
+}
+
+async function handleMe(req, res) {
+  const user = await auth.currentUser(req);
+  sendJson(res, user ? 200 : 401, { user: user ? auth.publicUser(user) : null, ...auth.config() });
+}
+
 function readBody(req) {
   return new Promise((resolve, reject) => {
     let size = 0;
@@ -205,12 +243,26 @@ async function serveStatic(req, res) {
   }
 }
 
-const server = http.createServer((req, res) => {
+const AUTH_ROUTES = { "/api/signup": "signup", "/api/login": "login", "/api/logout": "logout" };
+
+const server = http.createServer(async (req, res) => {
+  try {
+    await route(req, res);
+  } catch (err) {
+    console.error(err);
+    if (!res.headersSent) sendJson(res, 500, { error: "Something went wrong." });
+    else res.end();
+  }
+});
+
+async function route(req, res) {
   if (req.method === "POST" && req.url === "/api/chat") return handleChat(req, res);
+  if (req.method === "POST" && AUTH_ROUTES[req.url]) return handleAuth(req, res, AUTH_ROUTES[req.url]);
+  if (req.method === "GET" && req.url === "/api/me") return handleMe(req, res);
   if (req.method === "GET" && req.url === "/api/health") return sendJson(res, 200, { ok: true, model: MODEL });
   if (req.method === "GET") return serveStatic(req, res);
   sendJson(res, 405, { error: "Method not allowed" });
-});
+}
 
 server.listen(PORT, () => {
   console.log(`AI Business Assistant running at http://localhost:${PORT}`);
